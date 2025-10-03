@@ -1,0 +1,1371 @@
+@prefix mibo: <http://purl.org/net/mibo#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+mibo:ifAdminStatus a mibo:MibObject ;
+    rdfs:label "ifAdminStatus" ;
+    mibo:hasEnumeration [ mibo:hasName "up" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "testing" ;
+            mibo:hasValue 3 ],
+        [ mibo:hasName "down" ;
+            mibo:hasValue 2 ] ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.7" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:ifAlias a mibo:MibObject ;
+    rdfs:label "ifAlias" ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.18" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "DisplayString" .
+
+mibo:ifConnectorPresent a mibo:MibObject ;
+    rdfs:label "ifConnectorPresent" ;
+    mibo:hasEnumeration [ mibo:hasName "true" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "false" ;
+            mibo:hasValue 2 ] ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.17" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TruthValue" .
+
+mibo:ifCounterDiscontinuityTime a mibo:MibObject ;
+    rdfs:label "ifCounterDiscontinuityTime" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.19" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TimeStamp" .
+
+mibo:ifDescr a mibo:MibObject ;
+    rdfs:label "ifDescr" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.2" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "DisplayString" .
+
+mibo:ifHCInBroadcastPkts a mibo:MibObject ;
+    rdfs:label "ifHCInBroadcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.9" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter64" .
+
+mibo:ifHCInMulticastPkts a mibo:MibObject ;
+    rdfs:label "ifHCInMulticastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.8" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter64" .
+
+mibo:ifHCInOctets a mibo:MibObject ;
+    rdfs:label "ifHCInOctets" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.6" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter64" .
+
+mibo:ifHCInUcastPkts a mibo:MibObject ;
+    rdfs:label "ifHCInUcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.7" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter64" .
+
+mibo:ifHCOutBroadcastPkts a mibo:MibObject ;
+    rdfs:label "ifHCOutBroadcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.13" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter64" .
+
+mibo:ifHCOutMulticastPkts a mibo:MibObject ;
+    rdfs:label "ifHCOutMulticastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.12" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter64" .
+
+mibo:ifHCOutOctets a mibo:MibObject ;
+    rdfs:label "ifHCOutOctets" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.10" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter64" .
+
+mibo:ifHCOutUcastPkts a mibo:MibObject ;
+    rdfs:label "ifHCOutUcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.11" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter64" .
+
+mibo:ifHighSpeed a mibo:MibObject ;
+    rdfs:label "ifHighSpeed" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.15" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Gauge32" .
+
+mibo:ifInBroadcastPkts a mibo:MibObject ;
+    rdfs:label "ifInBroadcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifInDiscards a mibo:MibObject ;
+    rdfs:label "ifInDiscards" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.13" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifInErrors a mibo:MibObject ;
+    rdfs:label "ifInErrors" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.14" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifInMulticastPkts a mibo:MibObject ;
+    rdfs:label "ifInMulticastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.2" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifInNUcastPkts a mibo:MibObject ;
+    rdfs:label "ifInNUcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.12" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifInOctets a mibo:MibObject ;
+    rdfs:label "ifInOctets" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.10" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifInUcastPkts a mibo:MibObject ;
+    rdfs:label "ifInUcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.11" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifInUnknownProtos a mibo:MibObject ;
+    rdfs:label "ifInUnknownProtos" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.15" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifIndex a mibo:MibObject ;
+    rdfs:label "ifIndex" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "InterfaceIndex" .
+
+mibo:ifLastChange a mibo:MibObject ;
+    rdfs:label "ifLastChange" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.9" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TimeTicks" .
+
+mibo:ifLinkUpDownTrapEnable a mibo:MibObject ;
+    rdfs:label "ifLinkUpDownTrapEnable" ;
+    mibo:hasEnumeration [ mibo:hasName "disabled" ;
+            mibo:hasValue 2 ],
+        [ mibo:hasName "enabled" ;
+            mibo:hasValue 1 ] ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.14" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:ifMtu a mibo:MibObject ;
+    rdfs:label "ifMtu" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.4" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:ifName a mibo:MibObject ;
+    rdfs:label "ifName" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "DisplayString" .
+
+mibo:ifNumber a mibo:MibObject ;
+    rdfs:label "ifNumber" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:ifOperStatus a mibo:MibObject ;
+    rdfs:label "ifOperStatus" ;
+    mibo:hasEnumeration [ mibo:hasName "lowerLayerDown" ;
+            mibo:hasValue 7 ],
+        [ mibo:hasName "notPresent" ;
+            mibo:hasValue 6 ],
+        [ mibo:hasName "down" ;
+            mibo:hasValue 2 ],
+        [ mibo:hasName "up" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "unknown" ;
+            mibo:hasValue 4 ],
+        [ mibo:hasName "dormant" ;
+            mibo:hasValue 5 ],
+        [ mibo:hasName "testing" ;
+            mibo:hasValue 3 ] ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.8" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:ifOutBroadcastPkts a mibo:MibObject ;
+    rdfs:label "ifOutBroadcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.5" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifOutDiscards a mibo:MibObject ;
+    rdfs:label "ifOutDiscards" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.19" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifOutErrors a mibo:MibObject ;
+    rdfs:label "ifOutErrors" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.20" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifOutMulticastPkts a mibo:MibObject ;
+    rdfs:label "ifOutMulticastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.4" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifOutNUcastPkts a mibo:MibObject ;
+    rdfs:label "ifOutNUcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.18" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifOutOctets a mibo:MibObject ;
+    rdfs:label "ifOutOctets" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.16" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifOutQLen a mibo:MibObject ;
+    rdfs:label "ifOutQLen" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.21" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Gauge32" .
+
+mibo:ifOutUcastPkts a mibo:MibObject ;
+    rdfs:label "ifOutUcastPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.17" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:ifPhysAddress a mibo:MibObject ;
+    rdfs:label "ifPhysAddress" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.6" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "PhysAddress" .
+
+mibo:ifPromiscuousMode a mibo:MibObject ;
+    rdfs:label "ifPromiscuousMode" ;
+    mibo:hasEnumeration [ mibo:hasName "false" ;
+            mibo:hasValue 2 ],
+        [ mibo:hasName "true" ;
+            mibo:hasValue 1 ] ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.1.1.16" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TruthValue" .
+
+mibo:ifRcvAddressAddress a mibo:MibObject ;
+    rdfs:label "ifRcvAddressAddress" ;
+    mibo:hasMaxAccess "not-accessible" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.4.1.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "PhysAddress" .
+
+mibo:ifRcvAddressStatus a mibo:MibObject ;
+    rdfs:label "ifRcvAddressStatus" ;
+    mibo:hasEnumeration [ mibo:hasName "active" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "createAndGo" ;
+            mibo:hasValue 4 ],
+        [ mibo:hasName "notInService" ;
+            mibo:hasValue 2 ],
+        [ mibo:hasName "notReady" ;
+            mibo:hasValue 3 ],
+        [ mibo:hasName "destroy" ;
+            mibo:hasValue 6 ],
+        [ mibo:hasName "createAndWait" ;
+            mibo:hasValue 5 ],
+        [ mibo:hasName "notExists" ;
+            mibo:hasValue 0 ] ;
+    mibo:hasMaxAccess "read-create" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.4.1.2" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "RowStatus" .
+
+mibo:ifRcvAddressType a mibo:MibObject ;
+    rdfs:label "ifRcvAddressType" ;
+    mibo:hasEnumeration [ mibo:hasName "nonVolatile" ;
+            mibo:hasValue 3 ],
+        [ mibo:hasName "volatile" ;
+            mibo:hasValue 2 ],
+        [ mibo:hasName "other" ;
+            mibo:hasValue 1 ] ;
+    mibo:hasMaxAccess "read-create" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.4.1.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:ifSpecific a mibo:MibObject ;
+    rdfs:label "ifSpecific" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.22" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "ObjectIdentifier" .
+
+mibo:ifSpeed a mibo:MibObject ;
+    rdfs:label "ifSpeed" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.5" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Gauge32" .
+
+mibo:ifStackHigherLayer a mibo:MibObject ;
+    rdfs:label "ifStackHigherLayer" ;
+    mibo:hasMaxAccess "not-accessible" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.2.1.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "InterfaceIndexOrZero" .
+
+mibo:ifStackLastChange a mibo:MibObject ;
+    rdfs:label "ifStackLastChange" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.6" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TimeTicks" .
+
+mibo:ifStackLowerLayer a mibo:MibObject ;
+    rdfs:label "ifStackLowerLayer" ;
+    mibo:hasMaxAccess "not-accessible" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.2.1.2" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "InterfaceIndexOrZero" .
+
+mibo:ifStackStatus a mibo:MibObject ;
+    rdfs:label "ifStackStatus" ;
+    mibo:hasEnumeration [ mibo:hasName "createAndWait" ;
+            mibo:hasValue 5 ],
+        [ mibo:hasName "active" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "notReady" ;
+            mibo:hasValue 3 ],
+        [ mibo:hasName "notExists" ;
+            mibo:hasValue 0 ],
+        [ mibo:hasName "destroy" ;
+            mibo:hasValue 6 ],
+        [ mibo:hasName "notInService" ;
+            mibo:hasValue 2 ],
+        [ mibo:hasName "createAndGo" ;
+            mibo:hasValue 4 ] ;
+    mibo:hasMaxAccess "read-create" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.2.1.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "RowStatus" .
+
+mibo:ifTableLastChange a mibo:MibObject ;
+    rdfs:label "ifTableLastChange" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.5" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TimeTicks" .
+
+mibo:ifTestCode a mibo:MibObject ;
+    rdfs:label "ifTestCode" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.3.1.5" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "ObjectIdentifier" .
+
+mibo:ifTestId a mibo:MibObject ;
+    rdfs:label "ifTestId" ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.3.1.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TestAndIncr" .
+
+mibo:ifTestOwner a mibo:MibObject ;
+    rdfs:label "ifTestOwner" ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.3.1.6" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "OwnerString" .
+
+mibo:ifTestResult a mibo:MibObject ;
+    rdfs:label "ifTestResult" ;
+    mibo:hasEnumeration [ mibo:hasName "notSupported" ;
+            mibo:hasValue 4 ],
+        [ mibo:hasName "inProgress" ;
+            mibo:hasValue 3 ],
+        [ mibo:hasName "failed" ;
+            mibo:hasValue 7 ],
+        [ mibo:hasName "success" ;
+            mibo:hasValue 2 ],
+        [ mibo:hasName "none" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "unAbleToRun" ;
+            mibo:hasValue 5 ],
+        [ mibo:hasName "aborted" ;
+            mibo:hasValue 6 ] ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.3.1.4" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:ifTestStatus a mibo:MibObject ;
+    rdfs:label "ifTestStatus" ;
+    mibo:hasEnumeration [ mibo:hasName "notInUse" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "inUse" ;
+            mibo:hasValue 2 ] ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.3.1.2" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:ifTestType a mibo:MibObject ;
+    rdfs:label "ifTestType" ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.31.1.3.1.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "AutonomousType" .
+
+mibo:ifType a mibo:MibObject ;
+    rdfs:label "ifType" ;
+    mibo:hasEnumeration [ mibo:hasName "aal5" ;
+            mibo:hasValue 49 ],
+        [ mibo:hasName "ds0Bundle" ;
+            mibo:hasValue 82 ],
+        [ mibo:hasName "ieee1394" ;
+            mibo:hasValue 144 ],
+        [ mibo:hasName "proteon10Mbit" ;
+            mibo:hasValue 12 ],
+        [ mibo:hasName "lapf" ;
+            mibo:hasValue 119 ],
+        [ mibo:hasName "propCnls" ;
+            mibo:hasValue 89 ],
+        [ mibo:hasName "dtm" ;
+            mibo:hasValue 140 ],
+        [ mibo:hasName "voiceDID" ;
+            mibo:hasValue 213 ],
+        [ mibo:hasName "v35" ;
+            mibo:hasValue 45 ],
+        [ mibo:hasName "voiceEncap" ;
+            mibo:hasValue 103 ],
+        [ mibo:hasName "ieee80216WMAN" ;
+            mibo:hasValue 237 ],
+        [ mibo:hasName "sixToFour" ;
+            mibo:hasValue 215 ],
+        [ mibo:hasName "gigabitEthernet" ;
+            mibo:hasValue 117 ],
+        [ mibo:hasName "dvbRccMacLayer" ;
+            mibo:hasValue 146 ],
+        [ mibo:hasName "sdlc" ;
+            mibo:hasValue 17 ],
+        [ mibo:hasName "propVirtual" ;
+            mibo:hasValue 53 ],
+        [ mibo:hasName "hdlc" ;
+            mibo:hasValue 118 ],
+        [ mibo:hasName "g703at64k" ;
+            mibo:hasValue 66 ],
+        [ mibo:hasName "frf16MfrBundle" ;
+            mibo:hasValue 163 ],
+        [ mibo:hasName "dvbAsiOut" ;
+            mibo:hasValue 173 ],
+        [ mibo:hasName "pon155" ;
+            mibo:hasValue 207 ],
+        [ mibo:hasName "tunnel" ;
+            mibo:hasValue 131 ],
+        [ mibo:hasName "x86Laps" ;
+            mibo:hasValue 242 ],
+        [ mibo:hasName "virtualIpAddress" ;
+            mibo:hasValue 112 ],
+        [ mibo:hasName "fddi" ;
+            mibo:hasValue 15 ],
+        [ mibo:hasName "cnr" ;
+            mibo:hasValue 85 ],
+        [ mibo:hasName "docsCableUpstream" ;
+            mibo:hasValue 129 ],
+        [ mibo:hasName "aluEponOnu" ;
+            mibo:hasValue 267 ],
+        [ mibo:hasName "ultra" ;
+            mibo:hasValue 29 ],
+        [ mibo:hasName "voiceFXS" ;
+            mibo:hasValue 102 ],
+        [ mibo:hasName "mpls" ;
+            mibo:hasValue 166 ],
+        [ mibo:hasName "aluEponPhysicalUni" ;
+            mibo:hasValue 268 ],
+        [ mibo:hasName "shdsl" ;
+            mibo:hasValue 169 ],
+        [ mibo:hasName "isdns" ;
+            mibo:hasValue 75 ],
+        [ mibo:hasName "isdn" ;
+            mibo:hasValue 63 ],
+        [ mibo:hasName "ipOverAtm" ;
+            mibo:hasValue 114 ],
+        [ mibo:hasName "hippi" ;
+            mibo:hasValue 47 ],
+        [ mibo:hasName "dvbAsiIn" ;
+            mibo:hasValue 172 ],
+        [ mibo:hasName "voiceEMFGD" ;
+            mibo:hasValue 211 ],
+        [ mibo:hasName "opticalChannel" ;
+            mibo:hasValue 195 ],
+        [ mibo:hasName "wwanPP2" ;
+            mibo:hasValue 244 ],
+        [ mibo:hasName "docsCableDownstream" ;
+            mibo:hasValue 128 ],
+        [ mibo:hasName "starLan" ;
+            mibo:hasValue 11 ],
+        [ mibo:hasName "iso88025TokenRing" ;
+            mibo:hasValue 9 ],
+        [ mibo:hasName "g9982" ;
+            mibo:hasValue 264 ],
+        [ mibo:hasName "softwareLoopback" ;
+            mibo:hasValue 24 ],
+        [ mibo:hasName "mpc" ;
+            mibo:hasValue 113 ],
+        [ mibo:hasName "sonetPath" ;
+            mibo:hasValue 50 ],
+        [ mibo:hasName "ethernet3Mbit" ;
+            mibo:hasValue 26 ],
+        [ mibo:hasName "g703at2mb" ;
+            mibo:hasValue 67 ],
+        [ mibo:hasName "otnOdu" ;
+            mibo:hasValue 260 ],
+        [ mibo:hasName "ces" ;
+            mibo:hasValue 133 ],
+        [ mibo:hasName "miox25" ;
+            mibo:hasValue 38 ],
+        [ mibo:hasName "dvbRcsMacLayer" ;
+            mibo:hasValue 239 ],
+        [ mibo:hasName "isup" ;
+            mibo:hasValue 179 ],
+        [ mibo:hasName "infiniband" ;
+            mibo:hasValue 199 ],
+        [ mibo:hasName "e1" ;
+            mibo:hasValue 19 ],
+        [ mibo:hasName "g9983" ;
+            mibo:hasValue 265 ],
+        [ mibo:hasName "adsl2plus" ;
+            mibo:hasValue 238 ],
+        [ mibo:hasName "propDocsWirelessUpstream" ;
+            mibo:hasValue 182 ],
+        [ mibo:hasName "docsCableScte55d2DsOob" ;
+            mibo:hasValue 285 ],
+        [ mibo:hasName "v11" ;
+            mibo:hasValue 64 ],
+        [ mibo:hasName "frameRelayService" ;
+            mibo:hasValue 44 ],
+        [ mibo:hasName "tdlc" ;
+            mibo:hasValue 116 ],
+        [ mibo:hasName "docsCableUpstreamChannel" ;
+            mibo:hasValue 205 ],
+        [ mibo:hasName "docsCableScte55d1FwdOob" ;
+            mibo:hasValue 283 ],
+        [ mibo:hasName "propMultiplexor" ;
+            mibo:hasValue 54 ],
+        [ mibo:hasName "h323Proxy" ;
+            mibo:hasValue 165 ],
+        [ mibo:hasName "ipOverCdlc" ;
+            mibo:hasValue 109 ],
+        [ mibo:hasName "atm" ;
+            mibo:hasValue 37 ],
+        [ mibo:hasName "arcnet" ;
+            mibo:hasValue 35 ],
+        [ mibo:hasName "ipForward" ;
+            mibo:hasValue 142 ],
+        [ mibo:hasName "voiceFXO" ;
+            mibo:hasValue 101 ],
+        [ mibo:hasName "pppMultilinkBundle" ;
+            mibo:hasValue 108 ],
+        [ mibo:hasName "ppp" ;
+            mibo:hasValue 23 ],
+        [ mibo:hasName "rpr" ;
+            mibo:hasValue 225 ],
+        [ mibo:hasName "x25mlp" ;
+            mibo:hasValue 121 ],
+        [ mibo:hasName "ds0" ;
+            mibo:hasValue 81 ],
+        [ mibo:hasName "aluEponLogicalLink" ;
+            mibo:hasValue 269 ],
+        [ mibo:hasName "bgppolicyaccounting" ;
+            mibo:hasValue 162 ],
+        [ mibo:hasName "qam" ;
+            mibo:hasValue 226 ],
+        [ mibo:hasName "dvbTdm" ;
+            mibo:hasValue 240 ],
+        [ mibo:hasName "aflane8025" ;
+            mibo:hasValue 60 ],
+        [ mibo:hasName "hdh1822" ;
+            mibo:hasValue 3 ],
+        [ mibo:hasName "ibm370parChan" ;
+            mibo:hasValue 72 ],
+        [ mibo:hasName "ds1FDL" ;
+            mibo:hasValue 170 ],
+        [ mibo:hasName "docsCableNdr" ;
+            mibo:hasValue 288 ],
+        [ mibo:hasName "hdsl2" ;
+            mibo:hasValue 168 ],
+        [ mibo:hasName "rfc1483" ;
+            mibo:hasValue 159 ],
+        [ mibo:hasName "atmLogical" ;
+            mibo:hasValue 80 ],
+        [ mibo:hasName "atmRadio" ;
+            mibo:hasValue 189 ],
+        [ mibo:hasName "adsl" ;
+            mibo:hasValue 94 ],
+        [ mibo:hasName "voiceFGDOS" ;
+            mibo:hasValue 235 ],
+        [ mibo:hasName "v36" ;
+            mibo:hasValue 65 ],
+        [ mibo:hasName "fcipLink" ;
+            mibo:hasValue 224 ],
+        [ mibo:hasName "ddnX25" ;
+            mibo:hasValue 4 ],
+        [ mibo:hasName "propAtm" ;
+            mibo:hasValue 197 ],
+        [ mibo:hasName "sipSig" ;
+            mibo:hasValue 204 ],
+        [ mibo:hasName "capwapDot11Bss" ;
+            mibo:hasValue 253 ],
+        [ mibo:hasName "v37" ;
+            mibo:hasValue 120 ],
+        [ mibo:hasName "hssi" ;
+            mibo:hasValue 46 ],
+        [ mibo:hasName "fastdsl" ;
+            mibo:hasValue 282 ],
+        [ mibo:hasName "gr303RDT" ;
+            mibo:hasValue 177 ],
+        [ mibo:hasName "otnOtu" ;
+            mibo:hasValue 261 ],
+        [ mibo:hasName "rsrb" ;
+            mibo:hasValue 79 ],
+        [ mibo:hasName "ghn" ;
+            mibo:hasValue 290 ],
+        [ mibo:hasName "other" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "if-gsn" ;
+            mibo:hasValue 145 ],
+        [ mibo:hasName "propPointToPointSerial" ;
+            mibo:hasValue 22 ],
+        [ mibo:hasName "gfast" ;
+            mibo:hasValue 279 ],
+        [ mibo:hasName "para" ;
+            mibo:hasValue 34 ],
+        [ mibo:hasName "propBWAp2Mp" ;
+            mibo:hasValue 184 ],
+        [ mibo:hasName "pon622" ;
+            mibo:hasValue 208 ],
+        [ mibo:hasName "atmbond" ;
+            mibo:hasValue 234 ],
+        [ mibo:hasName "hostPad" ;
+            mibo:hasValue 90 ],
+        [ mibo:hasName "lapd" ;
+            mibo:hasValue 77 ],
+        [ mibo:hasName "nsip" ;
+            mibo:hasValue 27 ],
+        [ mibo:hasName "imt" ;
+            mibo:hasValue 190 ],
+        [ mibo:hasName "propDocsWirelessMaclayer" ;
+            mibo:hasValue 180 ],
+        [ mibo:hasName "opticalTransport" ;
+            mibo:hasValue 196 ],
+        [ mibo:hasName "proteon80Mbit" ;
+            mibo:hasValue 13 ],
+        [ mibo:hasName "atmVciEndPt" ;
+            mibo:hasValue 194 ],
+        [ mibo:hasName "h323Gatekeeper" ;
+            mibo:hasValue 164 ],
+        [ mibo:hasName "radioMAC" ;
+            mibo:hasValue 188 ],
+        [ mibo:hasName "dvbRccDownstream" ;
+            mibo:hasValue 147 ],
+        [ mibo:hasName "hippiInterface" ;
+            mibo:hasValue 57 ],
+        [ mibo:hasName "mplsTunnel" ;
+            mibo:hasValue 150 ],
+        [ mibo:hasName "idsl" ;
+            mibo:hasValue 154 ],
+        [ mibo:hasName "sdci" ;
+            mibo:hasValue 280 ],
+        [ mibo:hasName "ds3" ;
+            mibo:hasValue 30 ],
+        [ mibo:hasName "ciscoISLvlan" ;
+            mibo:hasValue 222 ],
+        [ mibo:hasName "gr303IDT" ;
+            mibo:hasValue 178 ],
+        [ mibo:hasName "homepna" ;
+            mibo:hasValue 220 ],
+        [ mibo:hasName "ptm" ;
+            mibo:hasValue 289 ],
+        [ mibo:hasName "propDocsWirelessDownstream" ;
+            mibo:hasValue 181 ],
+        [ mibo:hasName "rs232" ;
+            mibo:hasValue 33 ],
+        [ mibo:hasName "sip" ;
+            mibo:hasValue 31 ],
+        [ mibo:hasName "tr008" ;
+            mibo:hasValue 176 ],
+        [ mibo:hasName "atmIma" ;
+            mibo:hasValue 107 ],
+        [ mibo:hasName "mfSigLink" ;
+            mibo:hasValue 167 ],
+        [ mibo:hasName "dcn" ;
+            mibo:hasValue 141 ],
+        [ mibo:hasName "digitalPowerline" ;
+            mibo:hasValue 138 ],
+        [ mibo:hasName "bsc" ;
+            mibo:hasValue 83 ],
+        [ mibo:hasName "iso88025Dtr" ;
+            mibo:hasValue 86 ],
+        [ mibo:hasName "wwanPP" ;
+            mibo:hasValue 243 ],
+        [ mibo:hasName "radsl" ;
+            mibo:hasValue 95 ],
+        [ mibo:hasName "l2vlan" ;
+            mibo:hasValue 135 ],
+        [ mibo:hasName "myrinet" ;
+            mibo:hasValue 99 ],
+        [ mibo:hasName "smdsDxi" ;
+            mibo:hasValue 43 ],
+        [ mibo:hasName "g9981" ;
+            mibo:hasValue 263 ],
+        [ mibo:hasName "frameRelay" ;
+            mibo:hasValue 32 ],
+        [ mibo:hasName "rfc877x25" ;
+            mibo:hasValue 5 ],
+        [ mibo:hasName "lapb" ;
+            mibo:hasValue 16 ],
+        [ mibo:hasName "aviciOpticalEther" ;
+            mibo:hasValue 233 ],
+        [ mibo:hasName "adsl2" ;
+            mibo:hasValue 230 ],
+        [ mibo:hasName "capwapDot11Profile" ;
+            mibo:hasValue 252 ],
+        [ mibo:hasName "usb" ;
+            mibo:hasValue 160 ],
+        [ mibo:hasName "reachDSL" ;
+            mibo:hasValue 192 ],
+        [ mibo:hasName "eplrs" ;
+            mibo:hasValue 87 ],
+        [ mibo:hasName "isdnu" ;
+            mibo:hasValue 76 ],
+        [ mibo:hasName "gfp" ;
+            mibo:hasValue 221 ],
+        [ mibo:hasName "l3ipxvlan" ;
+            mibo:hasValue 137 ],
+        [ mibo:hasName "ip" ;
+            mibo:hasValue 126 ],
+        [ mibo:hasName "voiceOverCable" ;
+            mibo:hasValue 198 ],
+        [ mibo:hasName "frameRelayMPI" ;
+            mibo:hasValue 92 ],
+        [ mibo:hasName "frDlciEndPt" ;
+            mibo:hasValue 193 ],
+        [ mibo:hasName "fibreChannel" ;
+            mibo:hasValue 56 ],
+        [ mibo:hasName "docsCableMCmtsDownstream" ;
+            mibo:hasValue 229 ],
+        [ mibo:hasName "iso88023Csmacd" ;
+            mibo:hasValue 7 ],
+        [ mibo:hasName "sonetOverheadChannel" ;
+            mibo:hasValue 185 ],
+        [ mibo:hasName "ieee8023adLag" ;
+            mibo:hasValue 161 ],
+        [ mibo:hasName "slip" ;
+            mibo:hasValue 28 ],
+        [ mibo:hasName "voiceOverFrameRelay" ;
+            mibo:hasValue 153 ],
+        [ mibo:hasName "ieee80211" ;
+            mibo:hasValue 71 ],
+        [ mibo:hasName "iso88026Man" ;
+            mibo:hasValue 10 ],
+        [ mibo:hasName "docsCableScte55d2UsOob" ;
+            mibo:hasValue 286 ],
+        [ mibo:hasName "frameRelayInterconnect" ;
+            mibo:hasValue 58 ],
+        [ mibo:hasName "capwapWtpVirtualRadio" ;
+            mibo:hasValue 254 ],
+        [ mibo:hasName "econet" ;
+            mibo:hasValue 206 ],
+        [ mibo:hasName "atmFuni" ;
+            mibo:hasValue 106 ],
+        [ mibo:hasName "vdsl" ;
+            mibo:hasValue 97 ],
+        [ mibo:hasName "vmwareVirtualNic" ;
+            mibo:hasValue 258 ],
+        [ mibo:hasName "x25ple" ;
+            mibo:hasValue 40 ],
+        [ mibo:hasName "atmSubInterface" ;
+            mibo:hasValue 134 ],
+        [ mibo:hasName "dvbRccUpstream" ;
+            mibo:hasValue 148 ],
+        [ mibo:hasName "ieee80212" ;
+            mibo:hasValue 55 ],
+        [ mibo:hasName "cctEmul" ;
+            mibo:hasValue 61 ],
+        [ mibo:hasName "mediaMailOverIp" ;
+            mibo:hasValue 139 ],
+        [ mibo:hasName "pdnEtherLoop1" ;
+            mibo:hasValue 217 ],
+        [ mibo:hasName "modem" ;
+            mibo:hasValue 48 ],
+        [ mibo:hasName "fastEther" ;
+            mibo:hasValue 62 ],
+        [ mibo:hasName "arap" ;
+            mibo:hasValue 88 ],
+        [ mibo:hasName "aflane8023" ;
+            mibo:hasValue 59 ],
+        [ mibo:hasName "aluEpon" ;
+            mibo:hasValue 266 ],
+        [ mibo:hasName "ieee802154" ;
+            mibo:hasValue 259 ],
+        [ mibo:hasName "iso88022llc" ;
+            mibo:hasValue 41 ],
+        [ mibo:hasName "nfas" ;
+            mibo:hasValue 175 ],
+        [ mibo:hasName "eon" ;
+            mibo:hasValue 25 ],
+        [ mibo:hasName "dvbRcsTdma" ;
+            mibo:hasValue 241 ],
+        [ mibo:hasName "pdnEtherLoop2" ;
+            mibo:hasValue 218 ],
+        [ mibo:hasName "stackToStack" ;
+            mibo:hasValue 111 ],
+        [ mibo:hasName "docsCableMaclayer" ;
+            mibo:hasValue 127 ],
+        [ mibo:hasName "xboxWireless" ;
+            mibo:hasValue 281 ],
+        [ mibo:hasName "sonet" ;
+            mibo:hasValue 39 ],
+        [ mibo:hasName "qllc" ;
+            mibo:hasValue 68 ],
+        [ mibo:hasName "cableDownstreamRfPort" ;
+            mibo:hasValue 257 ],
+        [ mibo:hasName "mocaVersion1" ;
+            mibo:hasValue 236 ],
+        [ mibo:hasName "dlsw" ;
+            mibo:hasValue 74 ],
+        [ mibo:hasName "gpon" ;
+            mibo:hasValue 250 ],
+        [ mibo:hasName "voiceEBS" ;
+            mibo:hasValue 245 ],
+        [ mibo:hasName "channel" ;
+            mibo:hasValue 70 ],
+        [ mibo:hasName "voiceOverAtm" ;
+            mibo:hasValue 152 ],
+        [ mibo:hasName "iso88025Fiber" ;
+            mibo:hasValue 115 ],
+        [ mibo:hasName "ds1" ;
+            mibo:hasValue 18 ],
+        [ mibo:hasName "docsOfdmaUpstream" ;
+            mibo:hasValue 278 ],
+        [ mibo:hasName "l3ipvlan" ;
+            mibo:hasValue 136 ],
+        [ mibo:hasName "arcnetPlus" ;
+            mibo:hasValue 36 ],
+        [ mibo:hasName "sonetVT" ;
+            mibo:hasValue 51 ],
+        [ mibo:hasName "termPad" ;
+            mibo:hasValue 91 ],
+        [ mibo:hasName "vdsl2" ;
+            mibo:hasValue 251 ],
+        [ mibo:hasName "lmp" ;
+            mibo:hasValue 227 ],
+        [ mibo:hasName "docsOfdmDownstream" ;
+            mibo:hasValue 277 ],
+        [ mibo:hasName "pip" ;
+            mibo:hasValue 248 ],
+        [ mibo:hasName "hyperchannel" ;
+            mibo:hasValue 14 ],
+        [ mibo:hasName "smdsIcip" ;
+            mibo:hasValue 52 ],
+        [ mibo:hasName "mpegTransport" ;
+            mibo:hasValue 214 ],
+        [ mibo:hasName "bits" ;
+            mibo:hasValue 255 ],
+        [ mibo:hasName "ifVfiType" ;
+            mibo:hasValue 262 ],
+        [ mibo:hasName "atmDxi" ;
+            mibo:hasValue 105 ],
+        [ mibo:hasName "async" ;
+            mibo:hasValue 84 ],
+        [ mibo:hasName "aluGponPhysicalUni" ;
+            mibo:hasValue 271 ],
+        [ mibo:hasName "x213" ;
+            mibo:hasValue 93 ],
+        [ mibo:hasName "compositeLink" ;
+            mibo:hasValue 155 ],
+        [ mibo:hasName "primaryISDN" ;
+            mibo:hasValue 21 ],
+        [ mibo:hasName "opticalChannelGroup" ;
+            mibo:hasValue 219 ],
+        [ mibo:hasName "coffee" ;
+            mibo:hasValue 132 ],
+        [ mibo:hasName "ifPwType" ;
+            mibo:hasValue 246 ],
+        [ mibo:hasName "frForward" ;
+            mibo:hasValue 158 ],
+        [ mibo:hasName "sdsl" ;
+            mibo:hasValue 96 ],
+        [ mibo:hasName "plc" ;
+            mibo:hasValue 174 ],
+        [ mibo:hasName "srp" ;
+            mibo:hasValue 151 ],
+        [ mibo:hasName "propWirelessP2P" ;
+            mibo:hasValue 157 ],
+        [ mibo:hasName "fast" ;
+            mibo:hasValue 125 ],
+        [ mibo:hasName "voiceEM" ;
+            mibo:hasValue 100 ],
+        [ mibo:hasName "macSecControlledIF" ;
+            mibo:hasValue 231 ],
+        [ mibo:hasName "docsCableNdf" ;
+            mibo:hasValue 287 ],
+        [ mibo:hasName "transpHdlc" ;
+            mibo:hasValue 123 ],
+        [ mibo:hasName "fastEtherFX" ;
+            mibo:hasValue 69 ],
+        [ mibo:hasName "cblVectaStar" ;
+            mibo:hasValue 228 ],
+        [ mibo:hasName "regular1822" ;
+            mibo:hasValue 2 ],
+        [ mibo:hasName "atmVirtual" ;
+            mibo:hasValue 149 ],
+        [ mibo:hasName "teLink" ;
+            mibo:hasValue 200 ],
+        [ mibo:hasName "escon" ;
+            mibo:hasValue 73 ],
+        [ mibo:hasName "ss7SigLink" ;
+            mibo:hasValue 156 ],
+        [ mibo:hasName "aluELP" ;
+            mibo:hasValue 249 ],
+        [ mibo:hasName "docsCableScte55d1RetOob" ;
+            mibo:hasValue 284 ],
+        [ mibo:hasName "x25huntGroup" ;
+            mibo:hasValue 122 ],
+        [ mibo:hasName "gtp" ;
+            mibo:hasValue 216 ],
+        [ mibo:hasName "q2931" ;
+            mibo:hasValue 201 ],
+        [ mibo:hasName "iso88025CRFPInt" ;
+            mibo:hasValue 98 ],
+        [ mibo:hasName "vmwareNicTeam" ;
+            mibo:hasValue 272 ],
+        [ mibo:hasName "actelisMetaLOOP" ;
+            mibo:hasValue 223 ],
+        [ mibo:hasName "interleave" ;
+            mibo:hasValue 124 ],
+        [ mibo:hasName "ilan" ;
+            mibo:hasValue 247 ],
+        [ mibo:hasName "ethernetCsmacd" ;
+            mibo:hasValue 6 ],
+        [ mibo:hasName "msdsl" ;
+            mibo:hasValue 143 ],
+        [ mibo:hasName "sipTg" ;
+            mibo:hasValue 203 ],
+        [ mibo:hasName "a12MppSwitch" ;
+            mibo:hasValue 130 ],
+        [ mibo:hasName "linegroup" ;
+            mibo:hasValue 210 ],
+        [ mibo:hasName "docsCableUpstreamRfPort" ;
+            mibo:hasValue 256 ],
+        [ mibo:hasName "basicISDN" ;
+            mibo:hasValue 20 ],
+        [ mibo:hasName "bridge" ;
+            mibo:hasValue 209 ],
+        [ mibo:hasName "iso88024TokenBus" ;
+            mibo:hasValue 8 ],
+        [ mibo:hasName "macSecUncontrolledIF" ;
+            mibo:hasValue 232 ],
+        [ mibo:hasName "aal2" ;
+            mibo:hasValue 187 ],
+        [ mibo:hasName "mvl" ;
+            mibo:hasValue 191 ],
+        [ mibo:hasName "digitalWrapperOverheadChannel" ;
+            mibo:hasValue 186 ],
+        [ mibo:hasName "voiceOverIp" ;
+            mibo:hasValue 104 ],
+        [ mibo:hasName "pos" ;
+            mibo:hasValue 171 ],
+        [ mibo:hasName "ipOverClaw" ;
+            mibo:hasValue 110 ],
+        [ mibo:hasName "aluGponOnu" ;
+            mibo:hasValue 270 ],
+        [ mibo:hasName "virtualTg" ;
+            mibo:hasValue 202 ],
+        [ mibo:hasName "hiperlan2" ;
+            mibo:hasValue 183 ],
+        [ mibo:hasName "localTalk" ;
+            mibo:hasValue 42 ],
+        [ mibo:hasName "voiceFGDEANA" ;
+            mibo:hasValue 212 ],
+        [ mibo:hasName "ipSwitch" ;
+            mibo:hasValue 78 ] ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.2.2.1.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "IANAifType" .
+
+mibo:snmpEnableAuthenTraps a mibo:MibObject ;
+    rdfs:label "snmpEnableAuthenTraps" ;
+    mibo:hasEnumeration [ mibo:hasName "enabled" ;
+            mibo:hasValue 1 ],
+        [ mibo:hasName "disabled" ;
+            mibo:hasValue 2 ] ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.11.30" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:snmpInASNParseErrs a mibo:MibObject ;
+    rdfs:label "snmpInASNParseErrs" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.6" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInBadCommunityNames a mibo:MibObject ;
+    rdfs:label "snmpInBadCommunityNames" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.4" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInBadCommunityUses a mibo:MibObject ;
+    rdfs:label "snmpInBadCommunityUses" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.5" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInBadValues a mibo:MibObject ;
+    rdfs:label "snmpInBadValues" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.10" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInBadVersions a mibo:MibObject ;
+    rdfs:label "snmpInBadVersions" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInGenErrs a mibo:MibObject ;
+    rdfs:label "snmpInGenErrs" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.12" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInGetNexts a mibo:MibObject ;
+    rdfs:label "snmpInGetNexts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.16" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInGetRequests a mibo:MibObject ;
+    rdfs:label "snmpInGetRequests" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.15" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInGetResponses a mibo:MibObject ;
+    rdfs:label "snmpInGetResponses" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.18" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInNoSuchNames a mibo:MibObject ;
+    rdfs:label "snmpInNoSuchNames" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.9" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInPkts a mibo:MibObject ;
+    rdfs:label "snmpInPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInReadOnlys a mibo:MibObject ;
+    rdfs:label "snmpInReadOnlys" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.11" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInSetRequests a mibo:MibObject ;
+    rdfs:label "snmpInSetRequests" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.17" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInTooBigs a mibo:MibObject ;
+    rdfs:label "snmpInTooBigs" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.8" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInTotalReqVars a mibo:MibObject ;
+    rdfs:label "snmpInTotalReqVars" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.13" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInTotalSetVars a mibo:MibObject ;
+    rdfs:label "snmpInTotalSetVars" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.14" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpInTraps a mibo:MibObject ;
+    rdfs:label "snmpInTraps" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.19" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutBadValues a mibo:MibObject ;
+    rdfs:label "snmpOutBadValues" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.22" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutGenErrs a mibo:MibObject ;
+    rdfs:label "snmpOutGenErrs" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.24" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutGetNexts a mibo:MibObject ;
+    rdfs:label "snmpOutGetNexts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.26" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutGetRequests a mibo:MibObject ;
+    rdfs:label "snmpOutGetRequests" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.25" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutGetResponses a mibo:MibObject ;
+    rdfs:label "snmpOutGetResponses" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.28" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutNoSuchNames a mibo:MibObject ;
+    rdfs:label "snmpOutNoSuchNames" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.21" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutPkts a mibo:MibObject ;
+    rdfs:label "snmpOutPkts" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.2" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutSetRequests a mibo:MibObject ;
+    rdfs:label "snmpOutSetRequests" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.27" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutTooBigs a mibo:MibObject ;
+    rdfs:label "snmpOutTooBigs" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.20" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpOutTraps a mibo:MibObject ;
+    rdfs:label "snmpOutTraps" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.29" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpProxyDrops a mibo:MibObject ;
+    rdfs:label "snmpProxyDrops" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.32" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpSetSerialNo a mibo:MibObject ;
+    rdfs:label "snmpSetSerialNo" ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.6.3.1.1.6.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TestAndIncr" .
+
+mibo:snmpSilentDrops a mibo:MibObject ;
+    rdfs:label "snmpSilentDrops" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.11.31" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Counter32" .
+
+mibo:snmpTrapEnterprise a mibo:MibObject ;
+    rdfs:label "snmpTrapEnterprise" ;
+    mibo:hasMaxAccess "accessible-for-notify" ;
+    mibo:hasOID "1.3.6.1.6.3.1.1.4.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "ObjectIdentifier" .
+
+mibo:snmpTrapOID a mibo:MibObject ;
+    rdfs:label "snmpTrapOID" ;
+    mibo:hasMaxAccess "accessible-for-notify" ;
+    mibo:hasOID "1.3.6.1.6.3.1.1.4.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "ObjectIdentifier" .
+
+mibo:sysContact a mibo:MibObject ;
+    rdfs:label "sysContact" ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.1.4" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "DisplayString" .
+
+mibo:sysDescr a mibo:MibObject ;
+    rdfs:label "sysDescr" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.1.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "DisplayString" .
+
+mibo:sysLocation a mibo:MibObject ;
+    rdfs:label "sysLocation" ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.1.6" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "DisplayString" .
+
+mibo:sysName a mibo:MibObject ;
+    rdfs:label "sysName" ;
+    mibo:hasMaxAccess "read-write" ;
+    mibo:hasOID "1.3.6.1.2.1.1.5" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "DisplayString" .
+
+mibo:sysORDescr a mibo:MibObject ;
+    rdfs:label "sysORDescr" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.1.9.1.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "DisplayString" .
+
+mibo:sysORID a mibo:MibObject ;
+    rdfs:label "sysORID" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.1.9.1.2" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "ObjectIdentifier" .
+
+mibo:sysORIndex a mibo:MibObject ;
+    rdfs:label "sysORIndex" ;
+    mibo:hasMaxAccess "not-accessible" ;
+    mibo:hasOID "1.3.6.1.2.1.1.9.1.1" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:sysORLastChange a mibo:MibObject ;
+    rdfs:label "sysORLastChange" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.1.8" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TimeStamp" .
+
+mibo:sysORUpTime a mibo:MibObject ;
+    rdfs:label "sysORUpTime" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.1.9.1.4" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TimeStamp" .
+
+mibo:sysObjectID a mibo:MibObject ;
+    rdfs:label "sysObjectID" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.1.2" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "ObjectIdentifier" .
+
+mibo:sysServices a mibo:MibObject ;
+    rdfs:label "sysServices" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.1.7" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "Integer32" .
+
+mibo:sysUpTime a mibo:MibObject ;
+    rdfs:label "sysUpTime" ;
+    mibo:hasMaxAccess "read-only" ;
+    mibo:hasOID "1.3.6.1.2.1.1.3" ;
+    mibo:hasStatus "current" ;
+    mibo:hasSyntax "TimeTicks" .
+
