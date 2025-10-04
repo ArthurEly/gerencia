@@ -1,135 +1,148 @@
 # 🌐 Gerador de Grafo de Conhecimento para MIBs SNMP
 
-Este projeto implementa um pipeline completo para traduzir módulos **MIB (Management Information Base) do protocolo SNMP** em um **Grafo de Conhecimento RDF (Resource Description Framework)**. Além da tradução, o projeto fornece um conjunto de ferramentas em Python para analisar, consultar e visualizar o grafo gerado, transformando dados de gerenciamento de rede em uma base de conhecimento estruturada e semanticamente rica.
+Este projeto implementa um pipeline completo em Python para traduzir módulos **MIB (Management Information Base) do protocolo SNMP** em um **Grafo de Conhecimento RDF (Resource Description Framework)**. A solução utiliza um pré-processador para extração robusta de metadados e um gerador principal que automatiza a criação de grafos de dados e visualizações interativas para cada MIB processada.
+
+A execução do projeto é totalmente automatizada através de um `Makefile`.
 
 Este trabalho foi desenvolvido para a disciplina INF01015 - Gerência e Aplicações em Redes.
 
 ## ✨ Funcionalidades Principais
 
-  * **Tradução Rica de MIBs**: Converte módulos MIB (IF-MIB, SNMPv2-MIB, etc.) para o formato RDF/Turtle.
-  * **Extração Detalhada de Dados**: Captura não apenas OIDs e tipos, mas também metadados operacionais como permissões de acesso (`MAX-ACCESS`), status (`current`, `deprecated`) e mapeamentos de valores enumerados (`up(1)`, `down(2)`).
-  * **Análise de Métricas**: Calcula e exibe métricas essenciais do grafo, como número de nós e arestas, componentes conectados e os "hubs" de informação mais importantes (centralidade de grau).
-  * **Consultas Semânticas**: Permite fazer perguntas complexas ao grafo utilizando a linguagem SPARQL, como "Encontre todos os contadores" ou "Liste os objetos que posso escrever".
-  * **Múltiplas Visualizações**:
-      * Gera uma **imagem estática** de alta resolução do grafo completo para relatórios e visão geral.
-      * Cria uma **visualização interativa em HTML**, onde é possível arrastar nós, dar zoom e explorar as conexões dinamicamente no navegador.
+* **Pipeline Automatizado**: Processa múltiplos MIBs em sequência, gerando artefatos de dados e visualizações individuais para cada um.
+* **Pré-processamento Robusto**: Utiliza um script dedicado para extrair descrições diretamente dos arquivos-fonte `.my`, garantindo a captura completa dos metadados textuais.
+* **Tradução Rica para RDF**: Converte a estrutura hierárquica das MIBs para o formato de grafo RDF/Turtle, capturando OIDs, tipos de dados, status, permissões de acesso e as relações de pertencimento a grupos (`OBJECT-GROUP`).
+* **Visualização Interativa Dedicada**: Para cada MIB, gera uma página HTML autônoma com um grafo interativo, onde é possível explorar os nós e suas relações com zoom, arrastar e obter informações detalhadas ao passar o mouse.
+* **Tooltips Informativos**: Cada nó na visualização possui um tooltip completo, exibindo o nome do objeto, seu tipo, todos os seus atributos (OID, `MAX-ACCESS`, `STATUS`, etc.) e a descrição completa extraída.
+* **Mapeamento Semântico Visual**: Os nós no grafo são coloridos de acordo com o `OBJECT-GROUP` ao qual pertencem, tornando a identificação de módulos e funcionalidades visualmente intuitiva.
 
-## 📊 Visualizações Geradas
+## 🏗️ Estrutura do Projeto Final
 
-O projeto é capaz de gerar representações visuais complexas do grafo de conhecimento, como a imagem estática abaixo, e um arquivo HTML totalmente interativo.
-
-#### Visualização Estática (`grafo_ifmib.jpg`)
-
-Uma visão geral de todas as entidades e suas interconexões.
-
-#### Visualização Interativa (`grafo_interativo.html`)
-
-Um arquivo HTML que permite explorar o grafo no navegador com zoom, arrastar e destacar nós e conexões, ideal para uma análise detalhada.
-
------
-
-## 🏗️ Estrutura do Projeto
+A arquitetura foi consolidada em um fluxo de dois scripts principais, orquestrados por um `Makefile`.
 
 ```
+
 gerencia/
 │
-├── mibs_compilados/              # Diretório para os arquivos MIB compilados em .py pela PySMI
+├── mibs\_compilados/              \# MIBs compilados em .py (gerado automaticamente)
+├── mibs\_originais/               \# MIBs originais em formato .my (entrada para o pré-processador)
+│   ├── SNMPv2-MIB.my
+│   └── IF-MIB.my
 │
-├── analisar_grafo.py             # Script para calcular e exibir métricas do grafo
-├── consultar_grafo.py            # Script com exemplos de consultas SPARQL
-├── tradutor_mib_para_rdf.py      # Script principal que traduz MIB para RDF
-├── visualizar_grafo_completo.py  # Script que gera a imagem ESTÁTICA do grafo (PNG)
-├── visualizar_grafo_interativo.py# Script que gera a página INTERATIVA do grafo (HTML)
+├── pre\_processador\_descricoes.py \# Script que lê os .my e gera o JSON de descrições
+├── gerador\_de\_grafos.py          \# Script principal que gera os .ttl e os .html
 │
-├── knowledge_graph.ttl           # Arquivo de saída do grafo em formato Turtle
-├── grafo_ifmib.png               # Imagem de saída da visualização estática
-├── grafo_interativo.html         # Página de saída da visualização interativa
+├── descricoes\_consolidadas.json  \# Arquivo JSON com as descrições (gerado automaticamente)
 │
-├── requirements.txt              # Dependências Python do projeto
-└── README.md                     # Este arquivo
-```
+├── grafo\_SNMPv2-MIB.ttl          \# Saída RDF para o SNMPv2-MIB (gerado automaticamente)
+├── visualizacao\_SNMPv2-MIB.html  \# Saída interativa para o SNMPv2-MIB (gerado automaticamente)
+│
+├── grafo\_IF-MIB.ttl              \# Saída RDF para o IF-MIB (gerado automaticamente)
+├── visualizacao\_IF-MIB.html      \# Saída interativa para o IF-MIB (gerado automaticamente)
+│
+├── Makefile                      \# Arquivo de automação com os comandos do projeto
+├── requirements.txt              \# Dependências Python do projeto
+└── README.md                     \# Este arquivo
+
+````
 
 -----
 
-## 🚀 Como Executar
+## 🚀 Como Executar com `Makefile`
+
+O `Makefile` automatiza todo o processo de instalação e execução.
 
 ### Pré-requisitos
 
-  * Python 3.10+
-  * Gerenciador de pacotes `pip`
+* Python 3.10+
+* Gerenciador de pacotes `pip`
+* Ferramenta `make` (padrão em Linux e macOS; pode ser instalada no Windows via WSL ou Chocolatey)
 
-### Instalação
+### Fluxo de Execução
 
-1.  **Clone este repositório** e entre na pasta do projeto.
+**Passo 1: Preparar os Arquivos MIB Originais**
 
-2.  **Crie e ative um ambiente virtual** (altamente recomendado):
+1.  Se ainda não o fez, crie uma pasta chamada `mibs_originais` no diretório raiz do projeto.
+2.  Baixe os arquivos de texto MIB que deseja processar (ex: `SNMPv2-MIB.my` e `IF-MIB.my`) e coloque-os dentro desta pasta.
+
+**Passo 2: Instalar o Ambiente e as Dependências**
+
+Este comando único prepara todo o ambiente do projeto. **Execute-o apenas na primeira vez** ou após um `make uninstall`.
+
+```bash
+make install
+````
+
+*Isto irá criar um ambiente virtual `venv` e instalar todas as bibliotecas do `requirements.txt`.*
+
+**Passo 3: Executar o Pipeline Completo**
+
+Este é o comando principal que você usará para gerar todos os artefatos do projeto.
+
+```bash
+make run
+```
+
+*Isto irá, em sequência: compilar as MIBs, executar o pré-processador para criar o JSON de descrições e, finalmente, executar o gerador principal para criar os arquivos `.ttl` e `.html`.*
+
+**Passo 4: Analisar os Resultados**
+
+Após a execução, sua pasta conterá os arquivos `visualizacao_SNMPv2-MIB.html` e `visualizacao_IF-MIB.html`. Abra-os em qualquer navegador web para explorar os grafos interativos.
+
+### Outros Comandos Úteis do `Makefile`
+
+  * **Limpar apenas os arquivos de saída:**
 
     ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    # No Windows PowerShell, use: .\venv\Scripts\Activate.ps1
+    make clean
     ```
 
-3.  **Instale as dependências** listadas no `requirements.txt`:
+    *Este comando apaga apenas os arquivos `.html`, `.ttl` e `.json` gerados, mas mantém seu ambiente virtual e MIBs compiladas. Ideal para uma nova execução sem reinstalar tudo.*
+
+  * **Desinstalar o projeto (limpeza total):**
 
     ```bash
-    python3 -m pip install -r requirements.txt
+    make uninstall
     ```
 
-### Fluxo de Trabalho Completo
-
-Siga os passos na ordem para executar o projeto do início ao fim.
-
-**Passo 1: Compilar as MIBs-Fonte para Python**
-Este passo usa a `PySMI` para baixar os módulos MIB e suas dependências, compilando-os para o formato `.py` que o `PySNMP` utiliza.
-
-```bash
-# Este comando garante que IF-MIB, SNMPv2-MIB e suas dependências principais sejam baixadas
-python3 -m mibdump --destination-format pysnmp --destination-directory mibs_compilados IF-MIB SNMPv2-MIB SNMPv2-SMI SNMPv2-TC
-```
-
-**Passo 2: Gerar o Grafo de Conhecimento**
-Execute o script tradutor para processar os arquivos `.py` e gerar o arquivo `knowledge_graph.ttl`.
-
-```bash
-python3 tradutor_mib_para_rdf.py
-```
-
-**Passo 3: Consultar o Grafo com SPARQL**
-Execute o script de consulta para fazer perguntas ao grafo recém-criado.
-
-```bash
-python3 consultar_grafo.py
-```
-
-**Passo 4: Analisar as Métricas do Grafo**
-Execute o script de análise para obter os "sinais vitais" do seu grafo.
-
-```bash
-python3 analisar_grafo.py
-```
-
-**Passo 5: Gerar as Visualizações**
-Execute os dois scripts de visualização para criar os artefatos visuais.
-
-```bash
-# Gera a imagem estática 'grafo_ifmib.png'
-python3 visualizar_grafo_completo.py
-
-# Gera a página interativa 'grafo_interativo.html'
-python3 visualizar_grafo_interativo.py
-```
-
-> Após a execução, abra o arquivo `grafo_interativo.html` em qualquer navegador web para explorar o grafo.
+    *Este comando apaga tudo que foi gerado, incluindo o ambiente virtual `venv`, caches e MIBs compiladas. Use-o para retornar o projeto ao seu estado original.*
 
 -----
 
 ## 🛠️ Tecnologias Utilizadas
 
   * **Linguagem:** Python
+  * **Automação:** GNU Make
   * **Processamento SNMP:** PySNMP, PySMI
   * **Grafos de Conhecimento:** RDFlib
   * **Análise e Estrutura de Grafos:** NetworkX
-  * **Visualização:** Matplotlib, Pyvis
-  * **Linguagem de Consulta:** SPARQL
-  * **Formato de Dados:** RDF/Turtle
+  * **Visualização Interativa:** Pyvis
+  * **Extração de Texto:** Módulo `re` (Expressões Regulares)
+  * **Formato de Dados:** RDF/Turtle, JSON
+
+-----
+
+### Justificativa da Escolha das MIBs (SNMPv2-MIB e IF-MIB)
+
+A escolha dos módulos `SNMPv2-MIB` e `IF-MIB` foi estratégica para atender aos requisitos do trabalho e demonstrar a robustez da ferramenta de tradução automatizada. Juntos, eles representam um par ideal que cobre desde os conceitos mais fundamentais até as estruturas de dados mais práticas e complexas do gerenciamento de redes.
+
+#### 1\. SNMPv2-MIB: A Base Fundamental e Universal
+
+Esta MIB foi escolhida por ser a **pedra angular de todo o gerenciamento via SNMP**. Ela serve como uma "meta-MIB", descrevendo o próprio agente SNMP em um dispositivo.
+
+  * **Atendimento ao Requisito 1 (Padrão da Internet):** A `SNMPv2-MIB` é definida na **RFC 3418**, um padrão fundamental da IETF. Sua escolha garante a aderência a um padrão de internet universalmente reconhecido.
+  * **Universalidade:** Praticamente todo dispositivo que suporta SNMP implementa esta MIB. Isso a torna um exemplo perfeito de uma estrutura de dados de gerenciamento onipresente.
+  * **Informação de "Identidade":** Ela fornece dados essenciais sobre o dispositivo gerenciado, como descrição do sistema (`sysDescr`), tempo de atividade (`sysUpTime`) e contato (`sysContact`). Isso demonstra a capacidade da ferramenta de extrair informações de identidade e estado.
+  * **Variedade de Dados:** A MIB contém uma gama diversificada de tipos de dados (strings, contadores, identificadores de objeto), o que permitiu testar e validar a capacidade da ferramenta de traduzir diferentes primitivas para o RDF.
+
+#### 2\. IF-MIB: O Exemplo Prático e Estruturalmente Complexo
+
+Se a `SNMPv2-MIB` é a base, a `IF-MIB` é o exemplo **mais comum e prático** de gerenciamento de redes. Ela é usada para monitorar e gerenciar interfaces de rede (portas de switch, interfaces de roteador, etc.).
+
+  * **Atendimento ao Requisito 1 (Padrão da Internet):** A `IF-MIB` também é um padrão consolidado da IETF, definido na **RFC 2863**.
+  * **Representação de Dados Tabulares:** Sua principal característica é a `ifTable`, uma tabela complexa que lista todas as interfaces e suas dezenas de atributos (velocidade, status, erros, octetos de entrada/saída). A tradução de uma estrutura tabular para um grafo é um desafio significativo e demonstra a capacidade da ferramenta em lidar com estruturas de dados complexas, um ponto central do **Requisito 2**.
+  * **Relevância Operacional:** A `IF-MIB` é utilizada diariamente por administradores de rede para monitoramento de performance e diagnóstico de falhas. Escolhê-la confere ao projeto uma aplicação prática e de alto impacto no mundo real.
+  * **Demonstração da Semântica Visual:** A `IF-MIB` possui grupos bem definidos. A capacidade da nossa ferramenta de colorir os nós do grafo de acordo com o grupo ao qual pertencem (`ifGeneralInformationGroup`, `ifCounterGroup`, etc.) é perfeitamente demonstrada com esta MIB, tornando a visualização rica e funcional.
+
+Em conjunto, a `SNMPv2-MIB` e a `IF-MIB` formam uma dupla que não só cumpre os requisitos formais do trabalho, mas também permite demonstrar a capacidade da solução em traduzir desde os dados mais básicos e universais até as estruturas tabulares mais complexas e relevantes para o gerenciamento de redes moderno.
+
+```

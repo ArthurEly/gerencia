@@ -1,0 +1,27 @@
+# Arquivo para ignorar arquivos gerados e pastas de ambiente local no Git.
+
+# 1. Ambiente Virtual do Python
+# Ignora a pasta do ambiente virtual, que contém as bibliotecas instaladas.
+venv/
+
+# 2. Saídas do Projeto
+# Ignora todos os arquivos gerados pelos nossos scripts.
+*.html
+*.json
+*.ttl
+
+# 3. MIBs Compiladas
+# Ignora a pasta com os arquivos .py gerados pelo mibdump.
+mibs_compilados/
+
+# 4. Caches e Arquivos Compilados do Python
+# Padrão para projetos Python.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 5. Arquivos de Sistema Operacional/Editores (Opcional, mas recomendado)
+.DS_Store
+.vscode/
+.idea/

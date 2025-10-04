@@ -8,7 +8,7 @@
 # Notes
 # -----
 # ASN.1 source https://mibs.pysnmp.com/asn1/IF-MIB
-# Produced by pysmi-1.6.2 at Fri Oct  3 01:43:01 2025
+# Produced by pysmi-1.6.2 at Sat Oct  4 17:51:57 2025
 # On host DESKTOP-KDQIEIU platform Linux version 4.4.0-19041-Microsoft by user artti
 # Using Python version 3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
 
