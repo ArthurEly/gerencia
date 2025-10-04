@@ -85,7 +85,7 @@ Este passo usa a `PySMI` para baixar os módulos MIB e suas dependências, compi
 
 ```bash
 # Este comando garante que IF-MIB, SNMPv2-MIB e suas dependências principais sejam baixadas
-python3 -m pysmi.apps.mibdump --destination-format pysnmp --destination-directory mibs_compilados IF-MIB SNMPv2-MIB SNMPv2-SMI SNMPv2-TC
+python3 -m mibdump --destination-format pysnmp --destination-directory mibs_compilados IF-MIB SNMPv2-MIB SNMPv2-SMI SNMPv2-TC
 ```
 
 **Passo 2: Gerar o Grafo de Conhecimento**
