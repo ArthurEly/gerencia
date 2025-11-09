@@ -58,3 +58,8 @@ venv:
 
 # Declara alvos que não representam arquivos para evitar conflitos.
 .PHONY: all run install compile-mib clean uninstall venv
+
+# --- Alvo para SPARQL ---
+query: compile-mib
+	$(VENV) $(PYTHON) query_mibs.py 
+

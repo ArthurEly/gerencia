@@ -18,14 +18,14 @@ def mib_para_rdf(mib_builder, mib_name):
     for symbol_name, symbol_obj in symbols.items():
         subject = MIBO[symbol_name]
         if isinstance(symbol_obj, (MibScalar, MibTableColumn)):
-            g.add((subject, RDF.type, MIBO.MibObject))
+            #g.add((subject, RDF.type, MIBO.MibObject))
             if hasattr(symbol_obj, 'name'):
                 g.add((subject, MIBO.hasOID, Literal('.'.join(map(str, symbol_obj.name)))))
             if hasattr(symbol_obj, 'syntax') and symbol_obj.syntax is not None:
                 g.add((subject, MIBO.hasSyntax, Literal(symbol_obj.syntax.__class__.__name__)))
-            if hasattr(symbol_obj, 'maxAccess'):
-                g.add((subject, MIBO.hasMaxAccess, Literal(str(symbol_obj.maxAccess))))
-            if hasattr(symbol_obj, 'status'):
+#            if hasattr(symbol_obj, 'maxAccess'):
+#                g.add((subject, MIBO.hasMaxAccess, Literal(str(symbol_obj.maxAccess))))
+            if hasattr(symbol_obj, 'status') and symbol_obj.status != 'current':
                 g.add((subject, MIBO.hasStatus, Literal(str(symbol_obj.status))))
         elif isinstance(symbol_obj, ObjectGroup):
             g.add((subject, RDF.type, MIBO.MibGroup))
@@ -92,7 +92,7 @@ def visualizar_interativo(rdf_graph, descricoes, output_filename):
       "configure": { "enabled": true, "filter": "physics" },
       "physics": {
         "stabilization": { "iterations": 1000 },
-        "barnesHut": {
+        "forceAtlas2Based": {
           "gravitationalConstant": -15000,
           "centralGravity": 0.1,
           "springLength": 200,
