@@ -1,17 +1,17 @@
 # Biblioteca para manipular RDF
 rdflib>=6.0.0
 
-# PySNMP para manipular MIBs
-pysnmp>=4.5.0
-
-# PySMI para compilar MIBs
+# PySNMP (para 'smi' no gerador) e PySMI (para compilar)
+# Podemos voltar para a v6+, já que não usamos mais o 'hlapi' bugado
+pysnmp>=6.0.0
 pysmi>=0.4.0
+
+# --- NOVA DEPENDÊNCIA ---
+# Wrapper robusto sobre o net-snmp (snmpwalk)
+easysnmp>=0.2.5
 
 # NetworkX para visualizar grafos
 networkx>=3.1
-
-# Matplotlib para desenhar grafos
-matplotlib>=3.7.2
 
 # Para visualização interativa de grafos
 pyvis>=0.3.0

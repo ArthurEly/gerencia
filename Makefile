@@ -16,8 +16,12 @@ all: install
 # Alvo para executar o pipeline completo.
 run: venv compile-mib
 	@echo ">>> Executando o pipeline principal..."
+	@echo "--- ETAPA 1: Pré-processando descrições (.json) ---"
 	$(VENV) $(PYTHON) pre_processador_descricoes.py
+	@echo "--- ETAPA 1: Gerando grafos de schema (.ttl) e visualizações (.html) ---"
 	$(VENV) $(PYTHON) gerador_de_grafos.py
+	@echo "--- ETAPA 2: Preenchendo grafos com dados SNMP vivos (_vivo.ttl) ---"
+	$(VENV) $(PYTHON) preencher_grafos.py
 	@echo ">>> Pipeline concluído com sucesso!"
 
 # --- Alvos de Configuração e Limpeza ---
@@ -39,6 +43,7 @@ compile-mib: venv
 # ATUALIZADO: Limpa APENAS os arquivos de saída gerados pelos scripts.
 clean:
 	@echo ">>> Removendo arquivos de saída (.html, .ttl, .json)..."
+	# Este padrão (com .ttl) já remove os _vivo.ttl também
 	rm -f *.html *.ttl *.json
 	@echo ">>> Limpeza de saídas concluída."
 
@@ -52,7 +57,7 @@ uninstall:
 
 # --- Alvo Auxiliar ---
 
-# Cria o ambiente virtual se ele não existir.
+# Cria o ambiente virtual se ele não existir e garante que o pip exista.
 venv:
 	if [ ! -f venv ]; then python3 -m venv venv ; fi;
 
@@ -60,6 +65,7 @@ venv:
 .PHONY: all run install compile-mib clean uninstall venv
 
 # --- Alvo para SPARQL ---
+# Este alvo ainda aponta para o script antigo,
+# vamos mantê-lo por enquanto.
 query: compile-mib
-	$(VENV) $(PYTHON) query_mibs.py 
-
+	$(VENV) $(PYTHON) query_mibs.py
