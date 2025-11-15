@@ -15,3 +15,6 @@ matplotlib>=3.7.2
 
 # Para visualização interativa de grafos
 pyvis>=0.3.0
+
+# Para usar sparql
+rdfextras==0.1

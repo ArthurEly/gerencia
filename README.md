@@ -1,4 +1,10 @@
+
 # 🌐 Gerador de Grafo de Conhecimento para MIBs SNMP
+
+Por:
+Arthur Ferreira Ely 00338434
+Laura Becker Ramos 00326890
+Ian dos Reis Nodari 00341889
 
 Este projeto implementa um pipeline completo em Python para traduzir módulos **MIB (Management Information Base) do protocolo SNMP** em um **Grafo de Conhecimento RDF (Resource Description Framework)**. A solução utiliza um pré-processador para extração robusta de metadados e um gerador principal que automatiza a criação de grafos de dados e visualizações interativas para cada MIB processada.
 
