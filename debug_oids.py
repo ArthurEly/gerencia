@@ -4,7 +4,7 @@ from rdflib import Graph, Namespace
 from easysnmp import Session, EasySNMPError
 
 # --- Configuração ---
-GRAPH_FILE = "grafo_IF-MIB.ttl" # O arquivo que queremos depurar
+GRAPH_FILE = "grafo_IP-FORWARD-MIB.ttl" # O arquivo que queremos depurar
 SNMP_TARGET_HOST = 'localhost'
 SNMP_COMMUNITY = 'public'
 SNMP_VERSION = 2

@@ -1,178 +1,204 @@
+## Relatório - Etapa 2: Gerenciamento Autônomo com SPARQL
 
-# 🌐 Gerador de Grafo de Conhecimento para MIBs SNMP
+**Integrantes:**
 
-Por:
-Arthur Ferreira Ely 00338434
-Laura Becker Ramos 00326890
-Ian dos Reis Nodari 00341889
+  * Arthur Ferreira Ely (00338434)
+  * Laura Becker Ramos (00326890)
+  * Ian dos Reis Nodari (00341889)
 
-Este projeto implementa um pipeline completo em Python para traduzir módulos **MIB (Management Information Base) do protocolo SNMP** em um **Grafo de Conhecimento RDF (Resource Description Framework)**. A solução utiliza um pré-processador para extração robusta de metadados e um gerador principal que automatiza a criação de grafos de dados e visualizações interativas para cada MIB processada.
+### 1\. Evolução da Arquitetura (Etapa 1 vs. Etapa 2)
 
-A execução do projeto é totalmente automatizada através de um `Makefile`.
+Na Etapa 1, o projeto focou em *traduzir* MIBs para um Grafo de Conhecimento estático (arquivo `.ttl`) e executar consultas de *leitura* (`SPARQL SELECT`).
 
-Este trabalho foi desenvolvido para a disciplina INF01015 - Gerência e Aplicações em Redes.
+Para a Etapa 2, que exige **operações de gerenciamento** (escrita/ação), a arquitetura evoluiu para um sistema de gerenciamento autônomo. O `Makefile` e os scripts `preencher_grafos.py` e `gerador_de_grafos.py` ainda são usados para o *setup* inicial de compilação das MIBs e geração dos schemas `.ttl`.
 
-## ✨ Funcionalidades Principais
+A principal mudança é a introdução de **agentes autônomos** (`guardiao_ddos.py` e `gerenciador_failover.py`). Estes scripts:
 
-* **Pipeline Automatizado**: Processa múltiplos MIBs em sequência, gerando artefatos de dados e visualizações individuais para cada um.
-* **Pré-processamento Robusto**: Utiliza um script dedicado para extrair descrições diretamente dos arquivos-fonte `.my`, garantindo a captura completa dos metadados textuais.
-* **Tradução Rica para RDF**: Converte a estrutura hierárquica das MIBs para o formato de grafo RDF/Turtle, capturando OIDs, tipos de dados, status, permissões de acesso e as relações de pertencimento a grupos (`OBJECT-GROUP`).
-* **Visualização Interativa Dedicada**: Para cada MIB, gera uma página HTML autônoma com um grafo interativo, onde é possível explorar os nós e suas relações com zoom, arrastar e obter informações detalhadas ao passar o mouse.
-* **Tooltips Informativos**: Cada nó na visualização possui um tooltip completo, exibindo o nome do objeto, seu tipo, todos os seus atributos (OID, `MAX-ACCESS`, `STATUS`, etc.) e a descrição completa extraída.
-* **Mapeamento Semântico Visual**: Os nós no grafo são coloridos de acordo com o `OBJECT-GROUP` ao qual pertencem, tornando a identificação de módulos e funcionalidades visualmente intuitiva.
+1.  **Coletam dados vivos** do agente `snmpd` via `easysnmp`.
+2.  **Constroem o Grafo de Conhecimento em memória** a cada ciclo, usando `rdflib`.
+3.  **Analisam o grafo** usando consultas `SPARQL` (o "cérebro").
+4.  **Tomam decisões** baseadas nas respostas das consultas.
+5.  **Executam ações** (as "mãos") para alterar o dispositivo real, cumprindo o requisito de uma operação de gerenciamento baseada no grafo.
 
-## 🏗️ Estrutura do Projeto Final
+Para simular um ambiente de rede realista e resolver problemas de permissão (`genError`), toda a demonstração da Etapa 2 roda em um **laboratório virtual com Docker**.
 
-A arquitetura foi consolidada em um fluxo de dois scripts principais, orquestrados por um `Makefile`.
+### 2\. Estrutura de Arquivos (Etapa 2)
 
-```
+Os arquivos centrais para a demonstração da Etapa 2 são:
 
-gerencia/
-│
-├── mibs\_compilados/              \# MIBs compilados em .py (gerado automaticamente)
-├── mibs\_originais/               \# MIBs originais em formato .my (entrada para o pré-processador)
-│   ├── SNMPv2-MIB.my
-│   └── IF-MIB.my
-│
-├── pre\_processador\_descricoes.py \# Script que lê os .my e gera o JSON de descrições
-├── gerador\_de\_grafos.py          \# Script principal que gera os .ttl e os .html
-│
-├── descricoes\_consolidadas.json  \# Arquivo JSON com as descrições (gerado automaticamente)
-│
-├── grafo\_SNMPv2-MIB.ttl          \# Saída RDF para o SNMPv2-MIB (gerado automaticamente)
-├── visualizacao\_SNMPv2-MIB.html  \# Saída interativa para o SNMPv2-MIB (gerado automaticamente)
-│
-├── grafo\_IF-MIB.ttl              \# Saída RDF para o IF-MIB (gerado automaticamente)
-├── visualizacao\_IF-MIB.html      \# Saída interativa para o IF-MIB (gerado automaticamente)
-│
-├── Makefile                      \# Arquivo de automação com os comandos do projeto
-├── requirements.txt              \# Dependências Python do projeto
-└── README.md                     \# Este arquivo
+  * **`Dockerfile.vitima`**: Constrói o container principal que roda o `snmpd` (como `root`) e os scripts de gerenciamento.
+  * **`Dockerfile.atacante`**: Constrói um container com `hping3` para a simulação de DDoS.
+  * **`Dockerfile.gateway`**: Constrói um container "dummy" (`sleep`) para simular os roteadores A e B.
+  * **`entrypoint.sh`**: Script de inicialização do container `vitima` que inicia o `snmpd` corretamente e abre o terminal.
+  * **`guardiao_ddos.py`**: **(Demo 1)** Script de gerenciamento autônomo (P/C/F-FCAPS) que detecta picos de tráfego (via SPARQL) e desliga a interface (via `easysnmp.set()`).
+  * **`gerenciador_failover.py`**: **(Demo 2)** Script de gerenciamento autônomo (F/C-FCAPS) que detecta falha de link (ping), consulta o grafo (SPARQL) e muda o gateway (via `ip route`).
+  * **`requirements.txt`**: Dependências Python para o Docker (`rdflib`, `easysnmp`, `pysnmp`).
 
-```
+-----
 
----
+## 🚀 Roteiro de Execução (Demonstração da Etapa 2)
 
-## 🚀 Como Executar com `Makefile`
-
-O `Makefile` automatiza todo o processo de instalação e execução.
+Este roteiro documentado permite a execução e avaliação das duas operações de gerenciamento autônomo.
 
 ### Pré-requisitos
 
-* Python 3.10+
-* Gerenciador de pacotes `pip`
-* Ferramenta `make` (padrão em Linux e macOS; pode ser instalada no Windows via WSL ou Chocolatey)
+  * Docker e Docker Compose instalados.
 
-### Fluxo de Execução
+### Passo 1: Limpeza e Build (Terminal 0 - No seu PC)
 
-**Passo 1: Preparar os Arquivos MIB Originais**
-
-1. Se ainda não o fez, crie uma pasta chamada `mibs_originais` no diretório raiz do projeto.
-2. Baixe os arquivos de texto MIB que deseja processar (ex: `SNMPv2-MIB.my` e `IF-MIB.my`) e coloque-os dentro desta pasta.
-
-**Passo 2: Instalar o Ambiente e as Dependências**
-
-Este comando único prepara todo o ambiente do projeto. **Execute-o apenas na primeira vez** ou após um `make uninstall`.
+(Use este terminal para controlar o laboratório)
 
 ```bash
-make install
+# 1. Pare qualquer container antigo
+docker stop vitima atacante gateway-a gateway-b
+
+# 2. Limpe imagens e redes antigas
+docker rmi vitima atacante gateway
+docker network rm lab-rede-snmp lab-rede-failover
+
+# 3. Crie as duas redes virtuais
+docker network create lab-rede-snmp
+docker network create --subnet=172.19.0.0/24 lab-rede-failover
+
+# 4. Construa as 3 imagens
+docker build -t vitima -f Dockerfile.vitima .
+docker build -t atacante -f Dockerfile.atacante .
+docker build -t gateway -f Dockerfile.gateway .
 ```
 
-*Isto irá criar um ambiente virtual `venv` e instalar todas as bibliotecas do `requirements.txt`.*
+-----
 
-Talvez seja necessário instalar o venv do Python antes.
+### Demonstração 1: Guardião de DDoS (P/C/F-FCAPS)
 
-```
-apt install python3.10-venv
-```
+Esta demo prova que o "Cérebro" (baseado no Grafo/SPARQL) pode detectar uma **anomalia de Performance** (Pico de DDoS) e executar uma **ação de Configuração** (`easysnmp.set`) para mitigar a **Falha**.
 
-**Passo 3: Executar o Pipeline Completo**
-
-Este é o comando principal que você usará para gerar todos os artefatos do projeto.
+**Passo 1.1: Iniciar Vítima (Terminal 1)**
 
 ```bash
-make run
+docker run --rm -it \
+    --name=vitima \
+    --hostname=vitima \
+    --network=lab-rede-snmp \
+    --cap-add=NET_ADMIN \
+    --cap-add=NET_RAW \
+    vitima
 ```
 
-*Isto irá, em sequência: compilar as MIBs, executar o pré-processador para criar o JSON de descrições e, finalmente, executar o gerador principal para criar os arquivos `.ttl` e `.html`.*
+  * Dentro do container `root@vitima:/app#`, inicie o guardião (use o python do venv):
+    ```bash
+    /app/venv/bin/python3 guardiao_ddos.py
+    ```
+  * **Observe:** O log do Guardião (`Limite: 10.0 MiB/s`) começará a rodar.
 
-**Passo 4: Analisar os Resultados**
+**Passo 1.2: Iniciar Atacante (Terminal 2)**
 
-Após a execução, sua pasta conterá os arquivos `visualizacao_SNMPv2-MIB.html` e `visualizacao_IF-MIB.html`. Abra-os em qualquer navegador web para explorar os grafos interativos.
-
-### Outros Comandos Úteis do `Makefile`
-
-* **Limpar apenas os arquivos de saída:**
-
-  ```bash
-  make clean
-  ```
-
-  *Este comando apaga apenas os arquivos `.html`, `.ttl` e `.json` gerados, mas mantém seu ambiente virtual e MIBs compiladas. Ideal para uma nova execução sem reinstalar tudo.*
-* **Desinstalar o projeto (limpeza total):**
-
-  ```bash
-  make uninstall
-  ```
-
-  *Este comando apaga tudo que foi gerado, incluindo o ambiente virtual `venv`, caches e MIBs compiladas. Use-o para retornar o projeto ao seu estado original.*
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-* **Linguagem:** Python
-* **Automação:** GNU Make
-* **Processamento SNMP:** PySNMP, PySMI
-* **Grafos de Conhecimento:** RDFlib
-* **Análise e Estrutura de Grafos:** NetworkX
-* **Visualização Interativa:** Pyvis
-* **Extração de Texto:** Módulo `re` (Expressões Regulares)
-* **Formato de Dados:** RDF/Turtle, JSON
-
----
-
-### Justificativa da Escolha das MIBs (SNMPv2-MIB e IF-MIB)
-
-A escolha dos módulos `SNMPv2-MIB` e `IF-MIB` foi estratégica para atender aos requisitos do trabalho e demonstrar a robustez da ferramenta de tradução automatizada. Juntos, eles representam um par ideal que cobre desde os conceitos mais fundamentais até as estruturas de dados mais práticas e complexas do gerenciamento de redes.
-
-#### 1\. SNMPv2-MIB: A Base Fundamental e Universal
-
-Esta MIB foi escolhida por ser a **pedra angular de todo o gerenciamento via SNMP**. Ela serve como uma "meta-MIB", descrevendo o próprio agente SNMP em um dispositivo.
-
-* **Atendimento ao Requisito 1 (Padrão da Internet):** A `SNMPv2-MIB` é definida na **RFC 3418**, um padrão fundamental da IETF. Sua escolha garante a aderência a um padrão de internet universalmente reconhecido.
-* **Universalidade:** Praticamente todo dispositivo que suporta SNMP implementa esta MIB. Isso a torna um exemplo perfeito de uma estrutura de dados de gerenciamento onipresente.
-* **Informação de "Identidade":** Ela fornece dados essenciais sobre o dispositivo gerenciado, como descrição do sistema (`sysDescr`), tempo de atividade (`sysUpTime`) e contato (`sysContact`). Isso demonstra a capacidade da ferramenta de extrair informações de identidade e estado.
-* **Variedade de Dados:** A MIB contém uma gama diversificada de tipos de dados (strings, contadores, identificadores de objeto), o que permitiu testar e validar a capacidade da ferramenta de traduzir diferentes primitivas para o RDF.
-
-#### 2\. IF-MIB: O Exemplo Prático e Estruturalmente Complexo
-
-Se a `SNMPv2-MIB` é a base, a `IF-MIB` é o exemplo **mais comum e prático** de gerenciamento de redes. Ela é usada para monitorar e gerenciar interfaces de rede (portas de switch, interfaces de roteador, etc.).
-
-* **Atendimento ao Requisito 1 (Padrão da Internet):** A `IF-MIB` também é um padrão consolidado da IETF, definido na **RFC 2863**.
-* **Representação de Dados Tabulares:** Sua principal característica é a `ifTable`, uma tabela complexa que lista todas as interfaces e suas dezenas de atributos (velocidade, status, erros, octetos de entrada/saída). A tradução de uma estrutura tabular para um grafo é um desafio significativo e demonstra a capacidade da ferramenta em lidar com estruturas de dados complexas, um ponto central do **Requisito 2**.
-* **Relevância Operacional:** A `IF-MIB` é utilizada diariamente por administradores de rede para monitoramento de performance e diagnóstico de falhas. Escolhê-la confere ao projeto uma aplicação prática e de alto impacto no mundo real.
-* **Demonstração da Semântica Visual:** A `IF-MIB` possui grupos bem definidos. A capacidade da nossa ferramenta de colorir os nós do grafo de acordo com o grupo ao qual pertencem (`ifGeneralInformationGroup`, `ifCounterGroup`, etc.) é perfeitamente demonstrada com esta MIB, tornando a visualização rica e funcional.
-
-Em conjunto, a `SNMPv2-MIB` e a `IF-MIB` formam uma dupla que não só cumpre os requisitos formais do trabalho, mas também permite demonstrar a capacidade da solução em traduzir desde os dados mais básicos e universais até as estruturas tabulares mais complexas e relevantes para o gerenciamento de redes moderno.
-
-```
-
-
-colocar dps
-# Relatório - Etapa 2: Gerenciamento com SPARQL
-
-**Integrantes:**
-* Arthur Ferreira Ely (00338434)
-* Laura Becker Ramos (00326890)
-* Ian dos Reis Nodari (00341889)
-
-## 1. Dependências de Execução
-
-Para que o pipeline `make run` seja executado com sucesso, são necessárias duas dependências de sistema:
-
-### 1.1. Agente SNMP (`snmpd`)
-
-O agente é responsável por *fornecer* os dados.
 ```bash
-sudo apt install snmpd
+docker run --rm -it \
+    --name=atacante \
+    --network=lab-rede-snmp \
+    atacante
+```
+
+  * Dentro do container `root@atacante:/#`, inicie o ataque (rápido, com pacotes grandes e com logs de resposta):
+    ```bash
+    hping3 --interval u100 --syn -p 80 -d 1200 vitima
+    ```
+
+**Passo 1.3: Observar o Resultado**
+
+1.  **Terminal 2 (Atacante):** Você verá um fluxo de respostas (`RST/ACK`) da `vitima`.
+2.  **Terminal 1 (Vítima):** O log detectará o pico (ex: `Pico de 11.4 MiB/s`):
+    ```
+    [DDOS] Pico de XX.X MiB/s em eth0!
+    [AÇÃO] Desligando eth0 (Idx ...) por 30s.
+    [AÇÃO] SET(2) executado com SUCESSO.
+    ```
+3.  **Terminal 2 (Atacante):** No exato momento do `SET`, as respostas **vão parar**. O ataque foi mitigado.
+4.  **Terminal 1 (Vítima):** O log mostrará a porta em `(Admin: 2, Oper: DOWN)`.
+5.  **(Opcional) Espere 30 segundos:** O log no Terminal 1 mostrará:
+    ```
+    [INFO] Fim da quarentena de eth0... Reativando...
+    [AÇÃO] SET(1) executado com SUCESSO.
+    ```
+6.  **Terminal 2 (Atacante):** As respostas do `hping3` voltarão.
+
+(Pare os containers com `Ctrl+C` antes de ir para a próxima demo).
+
+-----
+
+### Demonstração 2: Gerenciador de Failover (F/C-FCAPS)
+
+Esta demo prova que o "Cérebro" (SPARQL) pode detectar uma **Falha** (Link A caído) e executar uma **ação de Configuração** (`ip route`) para mudar o gateway, baseando-se no conhecimento lido do grafo.
+
+**Passo 2.1: Iniciar os Gateways (Terminais 2 e 3)**
+
+  * **Terminal 2 (Gateway A - Principal):**
+    ```bash
+    docker run --rm -it \
+        --name=gateway-a \
+        --network=lab-rede-failover \
+        --ip=172.19.0.2 \
+        gateway
+    ```
+  * **Terminal 3 (Gateway B - Backup):**
+    ```bash
+    docker run --rm -it \
+        --name=gateway-b \
+        --network=lab-rede-failover \
+        --ip=172.19.0.3 \
+        gateway
+    ```
+
+**Passo 2.2: Iniciar Vítima (Terminal 1)**
+
+```bash
+docker run --rm -it \
+    --name=vitima \
+    --hostname=vitima \
+    --network=lab-rede-failover \
+    --ip=172.19.0.100 \
+    --cap-add=NET_ADMIN --cap-add=NET_RAW --privileged \
+    vitima
+```
+
+  * **Dentro do Terminal 1**, configure a rota inicial manualmente (o `entrypoint.sh` nos deu o terminal, mas não configurou a rota):
+    ```bash
+    # 1. Remove a rota padrão do Docker (via ...0.1)
+    root@vitima:/app# ip route del default
+    # 2. Adiciona a rota via Gateway A
+    root@vitima:/app# ip route add default via 172.19.0.2
+    ```
+  * **Ainda no Terminal 1**, inicie o guardião:
+    ```bash
+    root@vitima:/app# /app/venv/bin/python3 gerenciador_failover.py
+    ```
+  * **Observe:** O log mostrará `[MONITOR] Pingando link ativo (172.19.0.2)...` e `Sucesso! Link principal está UP.`
+
+**Passo 2.3: Simular a Falha (Terminal 4)**
+
+  * Abra um **quarto** terminal (no seu PC) e "mate" o Gateway A:
+    ```bash
+    docker stop gateway-a
+    ```
+
+**Passo 2.4: Observar o Resultado (Terminal 1)**
+
+1.  O log da Vítima mostrará 3 falhas de ping.
+2.  **O "Cérebro" é acionado:**
+    ```
+    [ALERTA] Link principal (A) está DOWN! (3 falhas seguidas).
+    [CÉREBRO] Consultando o Grafo de Conhecimento (SPARQL)...
+    [CÉREBRO] Grafo reporta: Rota padrão ATUAL usa Gateway 172.19.0.2
+    ```
+3.  **A "Mão" age:**
+    ```
+    [PLANO] Decisão: Mudar o gateway para o backup (GATEWAY_B).
+    [AÇÃO] 1/2: Destruindo rota antiga (via 172.19.0.2)...
+    [AÇÃO] 2/2: Adicionando rota de backup (via 172.19.0.3)...
+    [AÇÃO] FAILOVER CONCLUÍDO!
+    ```
+4.  **A Verificação:** O ciclo seguinte mostrará:
+    ```
+    [MONITOR] Pingando link ativo (172.19.0.3)...
+    [MONITOR] Sucesso! Link 172.19.0.3 está UP.
+    ```

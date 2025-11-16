@@ -145,7 +145,7 @@ def visualizar_interativo(rdf_graph, descricoes, output_filename):
 # --- PARTE 3: ORQUESTRADOR PRINCIPAL ---
 if __name__ == "__main__":
     mib_directory = "mibs_compilados"
-    mibs_para_processar = ['SNMPv2-MIB', 'IF-MIB']
+    mibs_para_processar = ['SNMPv2-MIB', 'IF-MIB', 'IP-FORWARD-MIB']
     json_descricoes_file = 'descricoes_consolidadas.json'
     print(f"Carregando descrições do arquivo '{json_descricoes_file}'...")
     try:

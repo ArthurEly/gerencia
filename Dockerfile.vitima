@@ -1,0 +1,36 @@
+# Salve como: Dockerfile.vitima
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 1. Instala tudo (incluindo 'ping')
+RUN apt-get update && \
+    apt-get install -y \
+    python3-pip \
+    python3-venv \
+    snmpd \
+    libsnmp-dev \
+    gcc \
+    python3-dev \
+    iproute2 \
+    iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Copia seu projeto para dentro do container
+WORKDIR /app
+COPY . .
+
+# 3. Cria o venv e instala as libs
+RUN python3 -m venv venv
+RUN /app/venv/bin/python3 -m pip install -r requirements.txt
+
+# 4. Configura o SNMPD para aceitar SET
+RUN echo "rwcommunity public 127.0.0.1" > /etc/snmp/snmpd.conf && \
+    echo "agentAddress udp:127.0.0.1:161" >> /etc/snmp/snmpd.conf
+
+# 5. Torna o entrypoint executável
+RUN chmod +x /app/entrypoint.sh
+
+# 6. Define o Entrypoint e o CMD
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["/bin/bash"]
