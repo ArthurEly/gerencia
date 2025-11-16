@@ -36,13 +36,38 @@ Os arquivos centrais para a demonstração da Etapa 2 são:
 
 -----
 
+## 🚀 Pré-requisitos
+
+### 1. Instalação (Linux/WSL)
+
+Garanta que o **Docker Engine** e o **Docker Compose (Plugin V2)** estejam instalados:
+
+```bash
+# 1. Instala o Docker e o Compose
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# 2. Permite ao usuário rodar Docker sem sudo
+sudo usermod -aG docker $USER
+````
+
+> **Importante:** Após o `usermod`, feche e reabra seu terminal para aplicar as permissões.
+
+### 2\. ⚠️ Atenção (Usuários Windows + WSL)
+
+Se você clonou este repositório no Windows, os arquivos podem ter quebras de linha (`CRLF`) incompatíveis com o Linux. Isso pode causar o erro `no such file or directory`.
+
+**Corrija isso antes do `docker build`:**
+
+```bash
+# 1. Instale o utilitário
+sudo apt-get install dos2unix
+
+# 2. Converta os arquivos (especialmente scripts .sh e .py)
+dos2unix *
+```
+
 ## 🚀 Roteiro de Execução (Demonstração da Etapa 2)
-
-Este roteiro documentado permite a execução e avaliação das duas operações de gerenciamento autônomo.
-
-### Pré-requisitos
-
-  * Docker e Docker Compose instalados.
 
 ### Passo 1: Limpeza e Build (Terminal 0 - No seu PC)
 
