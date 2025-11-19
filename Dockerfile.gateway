@@ -1,4 +1,0 @@
-# Salve como: Dockerfile.gateway
-FROM alpine:latest
-# Apenas fica parado
-CMD ["sleep", "infinity"]

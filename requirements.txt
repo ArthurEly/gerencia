@@ -1,9 +1,0 @@
-# Biblioteca para manipular RDF
-rdflib>=6.0.0
-
-# PySNMP (para 'smi' no gerador) e PySMI (para compilar)
-pysnmp>=6.0.0
-pysmi>=0.4.0
-
-# Wrapper robusto sobre o net-snmp (snmpwalk)
-easysnmp>=0.2.5

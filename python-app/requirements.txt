@@ -1,0 +1,5 @@
+rdflib
+pysnmp==4.4.12
+pyasn1<0.5.0
+sparqlwrapper
+docker
