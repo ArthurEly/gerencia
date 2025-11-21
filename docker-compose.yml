@@ -49,11 +49,10 @@ services:
     depends_on:
       - jena-fuseki
       - device-node
-      - gateway-alpha
-      - gateway-beta
-    # --- A MÁGICA: Permite que o Python controle o container vizinho ---
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      # A MÁGICA: Conecta sua pasta local 'public_html' à pasta interna '/app/public_html'
+      - ./public_html:/app/public_html
     networks:
       - rede-gerencia
 

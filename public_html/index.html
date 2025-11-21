@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitoramento ao Vivo</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body { background-color: #222; color: white; margin: 0; font-family: sans-serif; }
+        #network { width: 100vw; height: 100vh; }
+        #status { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px;}
+    </style>
+</head>
+<body>
+    <div id="status">Aguardando dados...</div>
+    <div id="network"></div>
+
+    <script type="text/javascript">
+        var nodes = new vis.DataSet([]);
+        var edges = new vis.DataSet([]);
+        var container = document.getElementById('network');
+        
+        var data = { nodes: nodes, edges: edges };
+        var options = {
+            nodes: {
+                shape: 'box',
+                font: { color: 'white', face: 'monospace' },
+                margin: 10
+            },
+            groups: {
+                gateway: { shape: 'dot', color: '#ffae00', size: 40, font: {size: 20, face: 'arial'} },
+                interface: { shape: 'box' }
+            },
+            physics: {
+                enabled: true,
+                hierarchicalRepulsion: { nodeDistance: 150 },
+                stabilization: { iterations: 100 }
+            },
+            layout: {
+                hierarchical: {
+                    enabled: true,
+                    direction: 'UD', // Cima para Baixo
+                    sortMethod: 'directed',
+                    levelSeparation: 150
+                }
+            }
+        };
+
+        var network = new vis.Network(container, data, options);
+        
+        // Desativa física após arrastar para não voltar sozinho
+        network.on("dragEnd", function (params) {
+            network.setOptions( { physics: false } );
+        });
+
+        async function updateGraph() {
+            try {
+                // Adiciona timestamp para evitar cache do navegador
+                const response = await fetch('dados.json?t=' + new Date().getTime());
+                const json = await response.json();
+
+                // ATUALIZAÇÃO INTELIGENTE
+                // O Vis.js detecta pelo ID: se o ID existe, ele atualiza propriedades.
+                // Se não existe, ele cria. Se não mexermos na posição, ele mantém onde está.
+                nodes.update(json.nodes);
+                
+                // Para arestas, é melhor limpar e refazer para garantir consistência
+                // (Arestas não guardam posição, então é seguro)
+                edges.clear();
+                edges.add(json.edges);
+
+                document.getElementById('status').innerText = 
+                    "Última atualização: " + new Date().toLocaleTimeString() + 
+                    " | Nós: " + json.nodes.length;
+
+            } catch (error) {
+                console.log("Esperando JSON...", error);
+            }
+        }
+
+        // Atualiza a cada 1 segundo
+        setInterval(updateGraph, 1000);
+    </script>
+</body>
+</html>
