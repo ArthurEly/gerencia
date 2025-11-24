@@ -2,83 +2,245 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Monitoramento ao Vivo</title>
+    <title>Monitoramento SDN - Failover</title>
+    
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        body { background-color: #222; color: white; margin: 0; font-family: sans-serif; }
+        body { background-color: #1a1a1a; color: white; margin: 0; font-family: 'Segoe UI', sans-serif; }
         #network { width: 100vw; height: 100vh; }
-        #status { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px;}
+        
+        /* Painel Esquerdo */
+        #status-bar { 
+            position: absolute; top: 10px; left: 10px; 
+            background: rgba(0, 0, 0, 0.8); 
+            border-left: 4px solid #00ff00;
+            padding: 15px; 
+            border-radius: 4px;
+            z-index: 999;
+            pointer-events: none;
+        }
+        
+        /* Painel Direito (Inteligência + Gráfico) */
+        #topology-panel {
+            position: absolute; top: 10px; right: 10px;
+            width: 320px; /* Um pouco mais largo para caber o gráfico */
+            background: rgba(0, 0, 0, 0.9);
+            border-right: 4px solid #00ccff; 
+            padding: 15px;
+            border-radius: 4px;
+            z-index: 999;
+            font-size: 14px;
+            box-shadow: -2px 2px 15px rgba(0,0,0,0.6);
+            transition: all 0.3s ease;
+        }
+
+        .stat-line { font-size: 12px; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-highlight { color: #fff; font-weight: bold; font-size: 14px; margin-bottom: 10px;}
+        
+        /* Classes de Status */
+        .status-ok { border-right-color: #00ff00 !important; }
+        .status-alert { border-right-color: #ffae00 !important; }
+        .status-critical { border-right-color: #ff0000 !important; }
+
+        .topo-msg { 
+            margin-top: 5px; padding-top: 5px; 
+            border-top: 1px solid #444; color: #ddd; font-style: italic; font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        /* Container do Gráfico */
+        #chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div id="status">Aguardando dados...</div>
+    <div id="status-bar">
+        <div class="stat-line">Última Atualização</div>
+        <div id="last-update" class="stat-highlight">Aguardando...</div>
+    </div>
+
+    <div id="topology-panel">
+        <div class="stat-line">Diagnóstico Topológico</div>
+        <div id="topo-status" class="stat-highlight">Analisando...</div>
+        <div id="topo-msg" class="topo-msg"></div>
+
+        <div class="stat-line">Balanceamento de Carga</div>
+        <div id="chart-container">
+            <canvas id="loadChart"></canvas>
+        </div>
+    </div>
+    
     <div id="network"></div>
 
     <script type="text/javascript">
+        // --- 1. Configuração do Vis.js (Grafo) ---
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
         var container = document.getElementById('network');
-        
         var data = { nodes: nodes, edges: edges };
+        
         var options = {
-            nodes: {
-                shape: 'box',
-                font: { color: 'white', face: 'monospace' },
-                margin: 10
-            },
+            nodes: { shape: 'dot', size: 20, font: { color: 'white', size: 14, strokeWidth: 2, strokeColor: '#000' }, borderWidth: 2 },
+            edges: { width: 2, color: { color: '#555', highlight: '#00ff00' }, arrows: 'to', smooth: { type: 'continuous' } },
             groups: {
-                gateway: { shape: 'dot', color: '#ffae00', size: 40, font: {size: 20, face: 'arial'} },
-                interface: { shape: 'box' }
+                gateway: { shape: 'image', image: 'https://img.icons8.com/color/96/router.png', size: 40, font: { size: 18, face: 'arial', color: '#ffae00' } },
+                interface: { shape: 'dot' },
+                resumo: { shape: 'box', color: { background: '#2c3e50', border: '#34495e' }, font: { size: 16, color: '#ecf0f1', face: 'monospace' }, margin: 15, shadow: true }
             },
-            physics: {
-                enabled: true,
-                hierarchicalRepulsion: { nodeDistance: 150 },
-                stabilization: { iterations: 100 }
+            physics: { enabled: true, barnesHut: { gravitationalConstant: -3000, centralGravity: 0.3, springLength: 95, springConstant: 0.04, damping: 0.09 }, stabilization: { iterations: 150 } },
+            layout: { randomSeed: 2 } 
+        };
+        var network = new vis.Network(container, data, options);
+
+        // --- 2. Configuração do Chart.js (Pizza) ---
+        const ctx = document.getElementById('loadChart').getContext('2d');
+        const loadChart = new Chart(ctx, {
+            type: 'doughnut', // ou 'pie'
+            data: {
+                labels: [], // Será preenchido dinamicamente
+                datasets: [{
+                    label: 'Conexões',
+                    data: [],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)', // Azul (Gateway 1)
+                        'rgba(255, 99, 132, 0.7)', // Vermelho (Gateway 2)
+                        'rgba(255, 206, 86, 0.7)'  // Amarelo (Outros)
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
             },
-            layout: {
-                hierarchical: {
-                    enabled: true,
-                    direction: 'UD', // Cima para Baixo
-                    sortMethod: 'directed',
-                    levelSeparation: 150
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: 'white', font: { size: 10 } } },
+                    tooltip: { enabled: true }
                 }
             }
-        };
-
-        var network = new vis.Network(container, data, options);
-        
-        // Desativa física após arrastar para não voltar sozinho
-        network.on("dragEnd", function (params) {
-            network.setOptions( { physics: false } );
         });
 
-        async function updateGraph() {
-            try {
-                // Adiciona timestamp para evitar cache do navegador
-                const response = await fetch('dados.json?t=' + new Date().getTime());
-                const json = await response.json();
+        // --- 3. Inteligência Front-end ---
+        function executarDiagnosticoFrontend(nodeList, edgeList) {
+            // 3.1 Mapeamento de Carga
+            let gatewayLoad = {};
+            let gatewayNames = {}; // ID -> Label legível (IP)
+            let connectedInterfaces = new Set();
+            let totalInterfaces = 0;
+            let gatewaysEncontrados = 0;
 
-                // ATUALIZAÇÃO INTELIGENTE
-                // O Vis.js detecta pelo ID: se o ID existe, ele atualiza propriedades.
-                // Se não existe, ele cria. Se não mexermos na posição, ele mantém onde está.
-                nodes.update(json.nodes);
-                
-                // Para arestas, é melhor limpar e refazer para garantir consistência
-                // (Arestas não guardam posição, então é seguro)
-                edges.clear();
-                edges.add(json.edges);
+            nodeList.forEach(n => {
+                if (n.group === 'gateway') {
+                    gatewayLoad[n.id] = 0;
+                    // Limpa o label para ficar bonito no gráfico (Gateway\nIP -> IP)
+                    gatewayNames[n.id] = n.label.replace("Gateway\n", "").trim(); 
+                    gatewaysEncontrados++;
+                }
+                if (n.group === 'interface') totalInterfaces++;
+            });
 
-                document.getElementById('status').innerText = 
-                    "Última atualização: " + new Date().toLocaleTimeString() + 
-                    " | Nós: " + json.nodes.length;
+            edgeList.forEach(e => {
+                if (gatewayLoad.hasOwnProperty(e.to)) gatewayLoad[e.to]++;
+                connectedInterfaces.add(e.from);
+            });
 
-            } catch (error) {
-                console.log("Esperando JSON...", error);
+            // 3.2 Atualiza Gráfico de Pizza
+            let chartLabels = [];
+            let chartData = [];
+            
+            for (let gwId in gatewayLoad) {
+                // Usa o nome amigável ou o ID se falhar
+                let name = gatewayNames[gwId] || gwId;
+                chartLabels.push(name);
+                chartData.push(gatewayLoad[gwId]);
+            }
+
+            // Atualiza o objeto do Chart.js
+            loadChart.data.labels = chartLabels;
+            loadChart.data.datasets[0].data = chartData;
+            loadChart.update('none'); // 'none' para animação suave sem piscar
+
+            // 3.3 Diagnóstico de Texto (Isolados e Diff)
+            let isolatedCount = 0;
+            nodeList.forEach(n => {
+                if (n.group === 'interface' && !connectedInterfaces.has(n.id)) isolatedCount++;
+            });
+
+            let loads = Object.values(gatewayLoad);
+            let maxLoad = loads.length > 0 ? Math.max(...loads) : 0;
+            let minLoad = loads.length > 0 ? Math.min(...loads) : 0;
+            let loadDiff = maxLoad - minLoad;
+
+            let statusMain = "OPERACIONAL";
+            let statusClass = "status-ok";
+            let msg = "Rede balanceada e conectada.";
+
+            if (isolatedCount > 0) {
+                statusMain = "CRÍTICO";
+                statusClass = "status-critical";
+                msg = `ALERTA: ${isolatedCount} interfaces isoladas (sem rota).`;
+            } else if (gatewaysEncontrados > 1 && loadDiff > 2) {
+                statusMain = "ALERTA";
+                statusClass = "status-alert";
+                msg = `Desbalanceamento: Diff de ${loadDiff} conexões.`;
+            }
+
+            const panel = document.getElementById('topology-panel');
+            const statusDiv = document.getElementById('topo-status');
+            const msgDiv = document.getElementById('topo-msg');
+
+            if (panel) {
+                panel.className = "";
+                panel.classList.add(statusClass);
+                statusDiv.innerText = statusMain;
+                msgDiv.innerText = msg;
             }
         }
 
-        // Atualiza a cada 1 segundo
-        setInterval(updateGraph, 1000);
+        // --- 4. Loop Principal ---
+        async function updateGraph() {
+            try {
+                const response = await fetch('dados.json?t=' + new Date().getTime());
+                const json = await response.json();
+                
+                json.nodes.forEach(node => {
+                    if (node.label) {
+                        node.label = node.label
+                            .replace("RX:", "UP:")
+                            .replace("TX:", "DOWN:")
+                            .replace("InOctets", "").replace("OutOctets", "")
+                            .replace(/\[.*?\]/g, "").replace("Info:", "").trim();
+                    }
+                    if (node.label && node.label.includes("RESUMO_REDE")) {
+                        node.group = 'resumo';
+                        node.label = node.label.replace("RESUMO_REDE", "📊 STATUS GERAL");
+                        node.fixed = true; node.x = 500; node.y = -300; node.physics = false; 
+                    }
+                    if (node.group === 'interface' && node.color === '#ff5555') {
+                        node.shape = 'diamond';
+                    }
+                });
+
+                nodes.update(json.nodes);
+                edges.clear();
+                edges.add(json.edges);
+
+                executarDiagnosticoFrontend(json.nodes, json.edges);
+                document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
+
+            } catch (error) { console.log("Aguardando backend...", error); }
+        }
+
+        setInterval(updateGraph, 500);
     </script>
 </body>
 </html>

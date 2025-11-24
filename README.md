@@ -123,12 +123,4 @@ Para testar a resiliência do sistema:
       * Logs mostrarão: `!!! ALERTA: Gateway 172.25.0.101 CAIU! Movendo rotas...`
       * No Dashboard, **todas** as interfaces que dependiam do Alpha mudarão suas conexões para o **Gateway Beta** instantaneamente.
 
-### Cenário C: Recuperação do Gateway
-
-1.  Ligue o Gateway novamente:
-    ```bash
-    docker start gateway-alpha
-    ```
-2.  O sistema continuará operando no Beta (para evitar instabilidade), mas detectará que o Alpha está disponível para futuras operações.
-
 ```

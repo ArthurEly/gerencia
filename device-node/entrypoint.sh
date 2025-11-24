@@ -35,7 +35,7 @@ service snmpd start
 (
     echo "Iniciando Auto-Refresh do Cache SNMP..."
     while true; do
-        sleep 3
+        sleep 1
         # O comando -HUP recarrega a config e limpa caches sem derrubar conexões
         pkill -HUP snmpd >/dev/null 2>&1
     done
