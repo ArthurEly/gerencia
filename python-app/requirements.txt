@@ -7,3 +7,4 @@ schedule
 pyvis
 docker
 networkx
+flask

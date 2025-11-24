@@ -1,126 +1,113 @@
+from flask import Flask, jsonify, send_from_directory
 import json
 import time
 import os
 from SPARQLWrapper import SPARQLWrapper, JSON, BASIC
 
+app = Flask(__name__)
+
 # --- CONFIGURAÇÕES ---
 FUSEKI_URL = "http://jena-fuseki:3030/rede/query"
-JSON_FILE = "/app/public_html/dados.json" 
-REFRESH_RATE = 0.5 # Modo Turbo
+PUBLIC_HTML = "/app/public_html"
 
-def fetch_data():
+def fetch_data_from_fuseki():
+    """Busca dados do Fuseki e converte para formato Vis.js"""
     sparql = SPARQLWrapper(FUSEKI_URL)
     sparql.setHTTPAuth(BASIC)
     sparql.setCredentials("admin", "admin")
     sparql.setReturnFormat(JSON)
     
-    # --- QUERY SEMÂNTICA ---
-    # Agora buscamos ?predLink (o nome da relação no banco)
     sparql.setQuery("""
         PREFIX : <http://rede#>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        
-        SELECT ?interface ?nome ?status ?gwUri ?gwIp ?predLink ?metricType ?metricVal ?metricUnit
+        SELECT ?s ?nome ?status ?gwIp ?metricType ?metricVal ?metricUnit
         WHERE {
-            ?interface a :InterfaceReal ;
-                       :nome ?nome ;
-                       :status ?status .
-            
-            # Descobre dinamicamente como a interface se conecta ao Gateway
-            OPTIONAL { 
-                ?interface ?predLink ?gwUri . 
-                ?gwUri a :Gateway ; :ip ?gwIp .
-            }
-            
-            OPTIONAL { 
-                ?interface :temMetrica ?m . 
-                ?m :tipo ?metricType ; :valor ?metricVal ; :unidade ?metricUnit . 
-            }
+            ?s a :InterfaceReal ; :nome ?nome ; :status ?status .
+            OPTIONAL { ?s :dependeDe ?gw . ?gw :ip ?gwIp . }
+            OPTIONAL { ?s :temMetrica ?m . ?m :tipo ?metricType ; :valor ?metricVal ; :unidade ?metricUnit . }
         }
     """)
-    try: return sparql.query().convert()["results"]["bindings"]
-    except: return []
-
-def format_metric(val, unit):
+    
     try:
-        val = float(val)
-        power = 1000 if unit == 'bps' else 1024
-        labels = {0:'', 1:'K', 2:'M', 3:'G'}
-        n = 0
-        while val > power: val /= power; n += 1
-        return f"{val:.1f} {labels[n]}{unit}"
-    except: return f"0 {unit}"
+        results = sparql.query().convert()["results"]["bindings"]
+    except:
+        return {"nodes": [], "edges": []}
 
-print("--- Gerente Semântico Iniciado ---")
-os.makedirs("/app/public_html", exist_ok=True)
-
-while True:
-    data = fetch_data()
-    nodes = []
+    nodes_dict = {}
     edges = []
     
-    if data:
-        interfaces = {}
-        gateways = {}
+    # Processa resultados do SPARQL
+    for row in results:
+        uri = row['s']['value']
+        nome = row['nome']['value']
+        status = row['status']['value']
+        gw = row.get('gwIp', {}).get('value')
+        
+        if uri not in nodes_dict:
+            # Define cor e grupo
+            color = '#55ff55' if status == 'UP' else '#ff5555'
+            group = 'interface'
+            if "RESUMO_REDE" in nome: group = 'resumo'
+            
+            label = nome
+            # Monta label inicial
+            nodes_dict[uri] = {
+                'id': uri, 'label': label, 'group': group, 
+                'color': color, 'status': status, 'metrics': {}
+            }
 
-        for item in data:
-            uri = item['interface']['value'].split('#')[-1]
+        # Adiciona Métricas ao Label
+        if 'metricType' in row:
+            m_type = row['metricType']['value'] # Ex: InOctets (UP), OutOctets (DOWN)
+            m_val = row.get('metricVal', {}).get('value', '0')
+            m_unit = row.get('metricUnit', {}).get('value', '')
             
-            # Pega o Gateway e o Predicado (Relação)
-            gw_uri = item.get('gwUri', {}).get('value', '').split('#')[-1]
-            gw_ip = item.get('gwIp', {}).get('value', '')
-            
-            # AQUI ESTÁ A MÁGICA: Pega o nome real da ontologia (ex: 'dependeDe')
-            pred_link = item.get('predLink', {}).get('value', '').split('#')[-1]
+            # Monta string: "UP: 10" ou "DOWN: 0 [MSG]"
+            nodes_dict[uri]['metrics'][m_type] = f"{m_val} {m_unit}"
 
-            if gw_uri: gateways[gw_uri] = gw_ip
-            
-            if uri not in interfaces:
-                interfaces[uri] = {
-                    'nome': item['nome']['value'],
-                    'status': item['status']['value'],
-                    'gw': gw_uri,
-                    'pred': pred_link, # Guarda o nome da relação
-                    'metrics': {}
+        # Cria Aresta se tiver Gateway
+        if gw:
+            gw_id = f"http://rede#Gateway_{gw.replace('.', '_')}"
+            if gw_id not in nodes_dict:
+                nodes_dict[gw_id] = {
+                    'id': gw_id, 'label': f"Gateway\n{gw}", 
+                    'group': 'gateway', 'level': 0, 'metrics' : {}
                 }
-            
-            if 'metricType' in item:
-                m_t = item['metricType']['value']
-                m_v = item.get('metricVal', {}).get('value', '0')
-                interfaces[uri]['metrics'][m_t] = format_metric(m_v, item.get('metricUnit',{}).get('value',''))
+            # Evita duplicar arestas
+            edge_id = f"{uri}_{gw_id}"
+            if not any(e['id'] == edge_id for e in edges):
+                edges.append({'id': edge_id, 'from': uri, 'to': gw_id})
 
-        # Nós Gateways
-        for i, (g_uri, g_ip) in enumerate(gateways.items()):
-            nodes.append({'id': g_uri, 'label': f"Gateway\n{g_ip}", 'group': 'gateway', 'level': 0})
+    # Finaliza Labels com Métricas
+    final_nodes = []
+    for n in nodes_dict.values():
+        if n['metrics']:
+            # Ex: "UP: 5\nDOWN: 2"
+            metrics_str = "\n".join([f"{k}: {v}" for k, v in n['metrics'].items()])
+            n['label'] += f"\n{metrics_str}"
+        final_nodes.append(n)
 
-        # Nós Interfaces
-        for uri, info in interfaces.items():
-            rx = info['metrics'].get('InOctets','-')
-            tx = info['metrics'].get('OutOctets','-')
-            
-            nodes.append({
-                'id': uri,
-                'label': f"{info['nome']}\nRX: {rx}\nTX: {tx}",
-                'color': '#55ff55' if info['status'] == 'UP' else '#ff5555',
-                'group': 'interface',
-                'level': 1
-            })
-            
-            # Cria aresta usando o NOME QUE VEIO DO BANCO
-            if info['gw'] and info['gw'] in gateways:
-                edges.append({
-                    # --- CORREÇÃO DE DIREÇÃO SEMÂNTICA ---
-                    'from': uri,          # Origem: A Interface
-                    'to': info['gw'],     # Destino: O Gateway
-                    
-                    'label': info['pred'], # Rótulo: "dependeDe"
-                    'arrows': 'to',        # Seta aponta para o destino (Gateway)
-                    
-                    # Estilização
-                    'font': {'align': 'middle', 'size': 12, 'color': 'white', 'background': '#222'},
-                    'color': {'color': '#aaaaaa'},
-                    'dashes': True
-                })
+    return {"nodes": final_nodes, "edges": edges}
 
-    with open(JSON_FILE, 'w') as f: json.dump({'nodes': nodes, 'edges': edges, 'timestamp': time.time()}, f)
-    time.sleep(REFRESH_RATE)
+# --- ROTAS DO SERVIDOR ---
+
+@app.route('/')
+def index():
+    return send_from_directory(PUBLIC_HTML, 'index.html')
+
+@app.route('/dados.json')
+def dados():
+    # Agora geramos o JSON em tempo real ao pedir, sem delay de escrita em disco!
+    return jsonify(fetch_data_from_fuseki())
+
+@app.route('/balancear', methods=['POST'])
+def balancear():
+    # Cria o arquivo que o coletor.py está vigiando
+    with open("/app/balancear.trigger", "w") as f:
+        f.write("GO")
+    return jsonify({"status": "Comando enviado! Rebalanceando..."})
+
+if __name__ == '__main__':
+    print("--- Servidor Web SDN Iniciado na porta 5000 ---")
+    # Host 0.0.0.0 permite acesso de fora do container
+    app.run(host='0.0.0.0', port=5000, debug=False)

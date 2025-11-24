@@ -294,10 +294,95 @@ def coletar_e_atualizar():
         try: requests.post(FUSEKI_UPDATE_URL, data={'update': f"INSERT DATA {{ {g.serialize(format='nt')} }}"})
         except: pass
 
+def forcar_rebalanceamento_total(descricoes, oper_status):
+    """
+    Balanceamento Dinâmico (Round-Robin):
+    Pega apenas as interfaces UP e distribui alternadamente entre Alpha e Beta.
+    Garante 50/50 de carga independente de quais interfaces caíram.
+    """
+    if not router_container: return
+    print("--- ⚖️ BALANCEAMENTO DINÂMICO INICIADO ---")
+    
+    # 1. Filtra apenas interfaces UP e ordena para ser determinístico
+    interfaces_up = []
+    for idx, nome_obj in descricoes.items():
+        nome = str(nome_obj)
+        if "veth" not in nome: continue
+        
+        estado = oper_status.get(idx, '2')
+        if estado == '1': # 1 = UP
+            # Guardamos (numero_int, nome) para ordenar corretamente: veth2 antes de veth10
+            num = int(nome.replace("veth", ""))
+            interfaces_up.append((num, nome))
+    
+    # Ordena pela numeração (0, 1, 2, 3...)
+    interfaces_up.sort()
+    
+    acoes_agendadas = []
+    gateways = [GATEWAY_ALPHA, GATEWAY_BETA]
+    
+    # 2. Distribuição Round-Robin
+    # i=0 -> Alpha, i=1 -> Beta, i=2 -> Alpha...
+    for i, (num, nome) in enumerate(interfaces_up):
+        
+        # A Mágica: O gateway depende da ORDEM na lista, não do ID da interface
+        target_gw = gateways[i % 2]
+        subnet = f"50.0.{num}.0"
+        
+        cmd = f"ip route replace {subnet}/24 via {target_gw} dev {nome} onlink"
+        
+        acoes_agendadas.append({
+            'cmd': cmd,
+            'iface': nome,
+            'gw': target_gw,
+            'sub': subnet
+        })
+
+    if not acoes_agendadas:
+        print("--- Nenhuma interface UP para balancear. ---")
+        return
+
+    print(f"--- Redistribuindo {len(acoes_agendadas)} interfaces ativas... ---")
+    
+    for acao in acoes_agendadas:
+        try:
+            router_container.exec_run(acao['cmd'])
+            
+            icone = "A" if acao['gw'] == GATEWAY_ALPHA else "B"
+            gw_nome = "Alpha" if acao['gw'] == GATEWAY_ALPHA else "Beta "
+            
+            print(f"   {icone} [MOVE] {acao['iface']} ({acao['sub']}) -> {gw_nome}")
+            
+        except Exception as e:
+            print(f"   [ERRO] {acao['iface']}: {e}")
+        
+    try: router_container.exec_run("service snmpd restart")
+    except: pass
+    
+    print(f"--- ⚖️ REBALANCEAMENTO CONCLUÍDO ---")
+
 if __name__ == "__main__":
     print("Aguardando inicialização...")
     time.sleep(10)
     while True:
-        try: coletar_e_atualizar()
-        except Exception as e: print(f"Erro: {e}")
+        try: 
+            # 1. Verifica se alguém apertou o botão (Arquivo existe?)
+            if os.path.exists("/app/balancear.trigger"):
+                print("Botão acionado! Coletando estado atual...")
+                
+                # Coletamos descrições E status agora
+                descricoes_atuais = snmp_walk(OID_IF_DESCR)
+                status_atuais = snmp_walk(OID_IF_OPER)
+                
+                # Passamos os dois para a função
+                forcar_rebalanceamento_total(descricoes_atuais, status_atuais)
+                
+                # Apaga o gatilho
+                os.remove("/app/balancear.trigger")
+                
+            # 2. Roda o ciclo normal
+            coletar_e_atualizar()
+            
+        except Exception as e: 
+            print(f"Erro: {e}")
         time.sleep(0.5)

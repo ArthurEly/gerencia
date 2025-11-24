@@ -49,9 +49,10 @@ services:
     depends_on:
       - jena-fuseki
       - device-node
+    ports:
+      - "5000:5000"  # <--- ADICIONE ISSO AQUI (Porta do Flask)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      # A MÁGICA: Conecta sua pasta local 'public_html' à pasta interna '/app/public_html'
       - ./public_html:/app/public_html
     networks:
       - rede-gerencia

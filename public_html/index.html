@@ -22,10 +22,10 @@
             pointer-events: none;
         }
         
-        /* Painel Direito (Inteligência + Gráfico) */
+        /* Painel Direito */
         #topology-panel {
             position: absolute; top: 10px; right: 10px;
-            width: 320px; /* Um pouco mais largo para caber o gráfico */
+            width: 320px;
             background: rgba(0, 0, 0, 0.9);
             border-right: 4px solid #00ccff; 
             padding: 15px;
@@ -36,26 +36,89 @@
             transition: all 0.3s ease;
         }
 
-        .stat-line { font-size: 12px; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-highlight { color: #fff; font-weight: bold; font-size: 14px; margin-bottom: 10px;}
+        .stat-line { 
+            font-size: 12px; margin-bottom: 5px; color: #aaa; 
+            text-transform: uppercase; letter-spacing: 1px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
         
-        /* Classes de Status */
+        .stat-highlight { color: #fff; font-weight: bold; font-size: 14px; margin-bottom: 10px;}
+        .topo-msg { margin-top: 5px; padding-top: 5px; border-top: 1px solid #444; color: #ddd; font-style: italic; font-size: 13px; margin-bottom: 15px;}
+
+        /* Cores de Status */
         .status-ok { border-right-color: #00ff00 !important; }
         .status-alert { border-right-color: #ffae00 !important; }
         .status-critical { border-right-color: #ff0000 !important; }
 
-        .topo-msg { 
-            margin-top: 5px; padding-top: 5px; 
-            border-top: 1px solid #444; color: #ddd; font-style: italic; font-size: 13px;
-            margin-bottom: 15px;
-        }
+        #chart-container { position: relative; height: 200px; width: 100%; }
 
-        /* Container do Gráfico */
-        #chart-container {
-            position: relative;
-            height: 200px;
-            width: 100%;
+        /* Botão de Balanceamento */
+        .balance-btn {
+            border: none; padding: 10px 20px; color: white; 
+            font-weight: bold; border-radius: 20px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            width: 100%; margin-top: 15px;
         }
+        .btn-active { background: linear-gradient(45deg, #00ccff, #0077ff); opacity: 1; cursor: pointer; }
+        .btn-active:hover { transform: scale(1.05); }
+        .btn-disabled { background: #444; color: #888; opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+
+        /* --- ÍCONE DE INFORMAÇÃO (i) --- */
+        .info-icon {
+            background: #444; color: #fff;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 18px;
+            font-size: 12px;
+            font-weight: bold;
+            font-family: serif;
+            cursor: pointer;
+            pointer-events: auto; /* Necessário pois o pai tem pointer-events: none? Não, o pai aqui é o painel direito que é auto */
+            display: inline-block;
+        }
+        .info-icon:hover { background: #00ccff; }
+
+        /* --- MODAL (POPUP) --- */
+        .modal-overlay {
+            display: none; /* Escondido por padrão */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #222;
+            border: 1px solid #444;
+            border-left: 4px solid #00ccff;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 20px; cursor: pointer; color: #aaa;
+        }
+        .modal-close:hover { color: #fff; }
+        
+        /* Formatação Matemática no Modal */
+        .math-block {
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            color: #eee;
+            margin: 10px 0;
+            border-left: 2px solid #555;
+        }
+        h3 { margin-top: 0; color: #00ccff; }
+        h4 { margin-bottom: 5px; color: #ccc; font-size: 15px; margin-top: 15px;}
+        p { font-size: 14px; line-height: 1.5; color: #bbb; }
+        var { font-style: italic; font-family: serif; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -65,7 +128,11 @@
     </div>
 
     <div id="topology-panel">
-        <div class="stat-line">Diagnóstico Topológico</div>
+        <div class="stat-line">
+            <span>Diagnóstico Topológico</span>
+            <span class="info-icon" onclick="abrirModal()" title="Ver modelo matemático">i</span>
+        </div>
+        
         <div id="topo-status" class="stat-highlight">Analisando...</div>
         <div id="topo-msg" class="topo-msg"></div>
 
@@ -73,17 +140,62 @@
         <div id="chart-container">
             <canvas id="loadChart"></canvas>
         </div>
+
+        <button id="btnBalancear" onclick="balancearCargas()" class="balance-btn btn-disabled" disabled>
+            Rede Balanceada
+        </button>
     </div>
     
     <div id="network"></div>
 
+    <div id="modalInfo" class="modal-overlay" onclick="fecharModal(event)">
+        <div class="modal-content">
+            <span class="modal-close" onclick="document.getElementById('modalInfo').style.display='none'">&times;</span>
+            <h3>Propriedades do Grafo</h3>
+            <p>Estamos utilizando Teoria dos Grafos para inferir a saúde da rede SDN através de propriedades topológicas.</p>
+
+            <h4>1. Detecção de Falhas (Conectividade)</h4>
+            <p>
+                Seja <var>G</var> o conjunto de Gateways ativos.<br>
+                Seja <var>C</var> o número de Componentes Conexos no grafo.
+            </p>
+            <div class="math-block">
+                Regra: Se <var>C</var> > |<var>G</var>|, então existem nós isolados.
+            </div>
+            <p style="font-size: 13px;">
+                <strong>Por que?</strong> Cada Gateway forma a raiz de uma árvore. Se todos os nós estiverem conectados, teremos exatamente tantas árvores quanto gateways. Se uma folha se solta, ela vira um novo componente (uma ilha de tamanho 1), aumentando <var>C</var>.
+            </p>
+
+            <h4>2. Desbalanceamento (Centralidade de Grau)</h4>
+            <p>
+                Seja <var>d(v)</var> o grau do vértice <var>v</var> (número de conexões).
+            </p>
+            <div class="math-block">
+                Regra: Se |<var>d(Gw<sub>A</sub>)</var> - <var>d(Gw<sub>B</sub>)</var>| > Limiar, rede desbalanceada.
+            </div>
+            <p style="font-size: 13px;">
+                Isso permite ao Gerente tomar a decisão pró-ativa de mover rotas do Gateway sobrecarregado para o ocioso.
+            </p>
+        </div>
+    </div>
+
     <script type="text/javascript">
-        // --- 1. Configuração do Vis.js (Grafo) ---
+        // Funções do Modal
+        function abrirModal() {
+            document.getElementById('modalInfo').style.display = 'flex';
+        }
+        function fecharModal(e) {
+            // Fecha se clicar fora da caixa branca
+            if (e.target.id === 'modalInfo') {
+                document.getElementById('modalInfo').style.display = 'none';
+            }
+        }
+
+        // --- 1. Configuração Vis.js ---
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
         var container = document.getElementById('network');
         var data = { nodes: nodes, edges: edges };
-        
         var options = {
             nodes: { shape: 'dot', size: 20, font: { color: 'white', size: 14, strokeWidth: 2, strokeColor: '#000' }, borderWidth: 2 },
             edges: { width: 2, color: { color: '#555', highlight: '#00ff00' }, arrows: 'to', smooth: { type: 'continuous' } },
@@ -97,43 +209,18 @@
         };
         var network = new vis.Network(container, data, options);
 
-        // --- 2. Configuração do Chart.js (Pizza) ---
+        // --- 2. Configuração Chart.js ---
         const ctx = document.getElementById('loadChart').getContext('2d');
         const loadChart = new Chart(ctx, {
-            type: 'doughnut', // ou 'pie'
-            data: {
-                labels: [], // Será preenchido dinamicamente
-                datasets: [{
-                    label: 'Conexões',
-                    data: [],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.7)', // Azul (Gateway 1)
-                        'rgba(255, 99, 132, 0.7)', // Vermelho (Gateway 2)
-                        'rgba(255, 206, 86, 0.7)'  // Amarelo (Outros)
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 206, 86, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { color: 'white', font: { size: 10 } } },
-                    tooltip: { enabled: true }
-                }
-            }
+            type: 'doughnut',
+            data: { labels: [], datasets: [{ label: 'Conexões', data: [], backgroundColor: ['rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)'], borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'], borderWidth: 1 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: 'white' } } } }
         });
 
         // --- 3. Inteligência Front-end ---
         function executarDiagnosticoFrontend(nodeList, edgeList) {
-            // 3.1 Mapeamento de Carga
             let gatewayLoad = {};
-            let gatewayNames = {}; // ID -> Label legível (IP)
+            let gatewayNames = {};
             let connectedInterfaces = new Set();
             let totalInterfaces = 0;
             let gatewaysEncontrados = 0;
@@ -141,7 +228,6 @@
             nodeList.forEach(n => {
                 if (n.group === 'gateway') {
                     gatewayLoad[n.id] = 0;
-                    // Limpa o label para ficar bonito no gráfico (Gateway\nIP -> IP)
                     gatewayNames[n.id] = n.label.replace("Gateway\n", "").trim(); 
                     gatewaysEncontrados++;
                 }
@@ -153,23 +239,16 @@
                 connectedInterfaces.add(e.from);
             });
 
-            // 3.2 Atualiza Gráfico de Pizza
             let chartLabels = [];
             let chartData = [];
-            
             for (let gwId in gatewayLoad) {
-                // Usa o nome amigável ou o ID se falhar
-                let name = gatewayNames[gwId] || gwId;
-                chartLabels.push(name);
+                chartLabels.push(gatewayNames[gwId] || gwId);
                 chartData.push(gatewayLoad[gwId]);
             }
-
-            // Atualiza o objeto do Chart.js
             loadChart.data.labels = chartLabels;
             loadChart.data.datasets[0].data = chartData;
-            loadChart.update('none'); // 'none' para animação suave sem piscar
+            loadChart.update('none');
 
-            // 3.3 Diagnóstico de Texto (Isolados e Diff)
             let isolatedCount = 0;
             nodeList.forEach(n => {
                 if (n.group === 'interface' && !connectedInterfaces.has(n.id)) isolatedCount++;
@@ -182,21 +261,34 @@
 
             let statusMain = "OPERACIONAL";
             let statusClass = "status-ok";
-            let msg = "Rede balanceada e conectada.";
+            let msg = "Rede perfeitamente balanceada.";
+            let buttonEnabled = false; 
 
             if (isolatedCount > 0) {
                 statusMain = "CRÍTICO";
                 statusClass = "status-critical";
                 msg = `ALERTA: ${isolatedCount} interfaces isoladas (sem rota).`;
-            } else if (gatewaysEncontrados > 1 && loadDiff > 2) {
-                statusMain = "ALERTA";
-                statusClass = "status-alert";
-                msg = `Desbalanceamento: Diff de ${loadDiff} conexões.`;
+                buttonEnabled = true; 
+            } 
+            else if (gatewaysEncontrados > 1) {
+                if (loadDiff >= 2) {
+                    buttonEnabled = true; 
+                    if (loadDiff === 2) {
+                        statusMain = "ALERTA (Leve)";
+                        statusClass = "status-alert"; 
+                        msg = `Pequeno desvio de carga (${maxLoad} vs ${minLoad}).`;
+                    } else {
+                        statusMain = "DESBALANCEADO";
+                        statusClass = "status-critical"; 
+                        msg = `Desbalanceamento Severo: Diff de ${loadDiff} conexões.`;
+                    }
+                }
             }
 
             const panel = document.getElementById('topology-panel');
             const statusDiv = document.getElementById('topo-status');
             const msgDiv = document.getElementById('topo-msg');
+            const btn = document.getElementById('btnBalancear');
 
             if (panel) {
                 panel.className = "";
@@ -204,42 +296,63 @@
                 statusDiv.innerText = statusMain;
                 msgDiv.innerText = msg;
             }
+
+            if (buttonEnabled) {
+                btn.disabled = false;
+                btn.className = "balance-btn btn-active";
+                btn.innerText = "⚖️ Balancear Cargas";
+            } else {
+                btn.disabled = true;
+                btn.className = "balance-btn btn-disabled";
+                btn.innerText = "Rede Balanceada";
+            }
         }
 
-        // --- 4. Loop Principal ---
+        // 4. Ação do Botão
+        async function balancearCargas() {
+            const btn = document.getElementById('btnBalancear');
+            btn.innerText = "🔄 Processando...";
+            btn.className = "balance-btn btn-disabled"; 
+            
+            try {
+                await fetch('/balancear', { method: 'POST' });
+                setTimeout(() => { btn.innerText = "Aguarde..."; }, 500);
+            } catch (e) {
+                alert("Erro: " + e);
+            }
+        }
+
+        // 5. Loop
         async function updateGraph() {
             try {
                 const response = await fetch('dados.json?t=' + new Date().getTime());
                 const json = await response.json();
                 
+                let nodesToDraw = [];
                 json.nodes.forEach(node => {
                     if (node.label) {
-                        node.label = node.label
-                            .replace("RX:", "UP:")
-                            .replace("TX:", "DOWN:")
+                        node.label = node.label.replace("RX:", "UP:").replace("TX:", "DOWN:")
                             .replace("InOctets", "").replace("OutOctets", "")
                             .replace(/\[.*?\]/g, "").replace("Info:", "").trim();
                     }
+                    
+                    if (node.group === 'interface' && node.color === '#ff5555') node.shape = 'diamond';
+
+                    // FILTRO: Remove o nó de Resumo da área de desenho
                     if (node.label && node.label.includes("RESUMO_REDE")) {
-                        node.group = 'resumo';
-                        node.label = node.label.replace("RESUMO_REDE", "📊 STATUS GERAL");
-                        node.fixed = true; node.x = 500; node.y = -300; node.physics = false; 
+                        return; 
                     }
-                    if (node.group === 'interface' && node.color === '#ff5555') {
-                        node.shape = 'diamond';
-                    }
+                    nodesToDraw.push(node);
                 });
 
-                nodes.update(json.nodes);
+                nodes.update(nodesToDraw);
                 edges.clear();
                 edges.add(json.edges);
-
-                executarDiagnosticoFrontend(json.nodes, json.edges);
+                executarDiagnosticoFrontend(nodesToDraw, json.edges);
                 document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
 
-            } catch (error) { console.log("Aguardando backend...", error); }
+            } catch (error) { console.log("...", error); }
         }
-
         setInterval(updateGraph, 500);
     </script>
 </body>
