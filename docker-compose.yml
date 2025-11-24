@@ -56,6 +56,18 @@ services:
       - ./public_html:/app/public_html
     networks:
       - rede-gerencia
+  
+  attacker:
+    image: alpine:latest
+    container_name: traffic-attacker
+    # O TRUQUE: Compartilha a pilha de rede do Roteador
+    # Ele "vê" as interfaces veth0, peer0, etc.
+    network_mode: service:device-node 
+    # Instala iperf3 e fica dormindo esperando comando
+    privileged: true
+    command: sh -c "apk add --no-cache iperf3 bash && sleep infinity"
+    depends_on:
+      - device-node
 
 networks:
   rede-gerencia:
