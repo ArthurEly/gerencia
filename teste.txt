@@ -1,0 +1,13 @@
+docker stop gateway-alpha 
+docker start gateway-alpha
+
+docker exec device-node ip link set veth7 down
+docker exec device-node ip link set veth7 up
+
+cat attack.sh | docker exec -i traffic-attacker sh
+
+docker stop gateway-alpha gateway-beta 
+docker start gateway-alpha gateway-beta 
+
+
+docker exec device-node ip route show

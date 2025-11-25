@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitoramento SDN</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #1a1a1a; color: white; margin: 0; font-family: 'Segoe UI', sans-serif; }
+        #network { width: 100vw; height: 100vh; }
+        
+        #status-bar { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.8); border-left: 4px solid #00ff00; padding: 15px; border-radius: 4px; z-index: 999; pointer-events: none; }
+        
+        #topology-panel { position: absolute; top: 10px; right: 10px; width: 320px; background: rgba(0, 0, 0, 0.9); border-right: 4px solid #00ccff; padding: 15px; border-radius: 4px; z-index: 999; font-size: 14px; box-shadow: -2px 2px 15px rgba(0,0,0,0.6); transition: all 0.3s ease; }
+        
+        .stat-line { font-size: 12px; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+        .stat-highlight { color: #fff; font-weight: bold; font-size: 14px; margin-bottom: 10px;}
+        .topo-msg { margin-top: 5px; padding-top: 5px; border-top: 1px solid #444; color: #ddd; font-style: italic; font-size: 13px; margin-bottom: 15px;}
+        
+        .status-ok { border-right-color: #00ff00 !important; }
+        .status-alert { border-right-color: #ffae00 !important; }
+        .status-critical { border-right-color: #ff0000 !important; }
+        
+        #chart-container { position: relative; height: 200px; width: 100%; }
+        
+        /* BOTÕES */
+        .action-btn { border: none; padding: 10px 20px; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.2s; }
+        .btn-balance { background: linear-gradient(45deg, #00ccff, #0077ff); }
+        
+        /* Botão Reset (Vermelho) - Começa escondido */
+        .btn-reset { background: linear-gradient(45deg, #ff4444, #cc0000); display: none; margin-top: 15px; }
+        
+        .btn-disabled { background: #444; color: #888; cursor: not-allowed; }
+        .action-btn:not(.btn-disabled):hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(255,255,255,0.2); }
+
+        /* LISTA SUSPEITOS */
+        #suspicious-container { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #555; }
+        .suspicious-title { color: #d580ff; font-weight: bold; margin-bottom: 8px; display: block; }
+        .suspicious-item { background: rgba(100, 0, 120, 0.3); border-left: 3px solid #d580ff; padding: 5px 10px; margin-bottom: 5px; font-size: 13px; color: #eecbff; }
+        
+        /* INFO ICON & MODAL */
+        .info-icon { background: #444; color: #fff; width: 18px; height: 18px; border-radius: 50%; text-align: center; line-height: 18px; font-size: 12px; font-weight: bold; font-family: serif; cursor: pointer; display: inline-block; pointer-events: auto; }
+        .info-icon:hover { background: #00ccff; }
+        
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; }
+        .modal-content { background: #222; border: 1px solid #444; border-left: 4px solid #00ccff; padding: 25px; border-radius: 8px; max-width: 500px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.8); position: relative; }
+        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #aaa; }
+        
+        /* Formatação Matemática */
+        .math-block { background: #111; padding: 10px; border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace; color: #eee; margin: 10px 0; border-left: 2px solid #555; }
+        h3 { margin-top: 0; color: #00ccff; } h4 { margin-bottom: 5px; color: #ccc; font-size: 15px; margin-top: 15px;} p { font-size: 14px; line-height: 1.5; color: #bbb; } var { font-style: italic; font-family: serif; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="status-bar"><div class="stat-line">Última Atualização</div><div id="last-update" class="stat-highlight">Aguardando...</div></div>
+    
+    <div id="topology-panel">
+        <div class="stat-line"><span>Diagnóstico</span><span class="info-icon" onclick="document.getElementById('modalInfo').style.display='flex'">i</span></div>
+        <div id="topo-status" class="stat-highlight">Analisando...</div>
+        <div id="topo-msg" class="topo-msg"></div>
+        
+        <div class="stat-line">Carga</div>
+        <div id="chart-container"><canvas id="loadChart"></canvas></div>
+        
+        <div id="suspicious-container">
+            <span class="suspicious-title">⚠️ Alertas de Segurança</span>
+            <div id="suspicious-list"></div>
+            <button id="btnReset" onclick="resetAlertas()" class="action-btn btn-reset">🛡️ Resetar Alertas</button>
+        </div>
+
+        <button id="btnBalancear" onclick="balancearCargas()" class="action-btn btn-balance btn-disabled" disabled>Rede Balanceada</button>
+    </div>
+    
+    <div id="network"></div>
+
+    <div id="modalInfo" class="modal-overlay" onclick="if(event.target.id==='modalInfo')this.style.display='none'">
+        <div class="modal-content">
+            <span class="modal-close" onclick="document.getElementById('modalInfo').style.display='none'">&times;</span>
+            <h3>Propriedades do Grafo</h3>
+            <p>Monitoramento baseado em análise topológica.</p>
+
+            <h4>1. Detecção de Falhas</h4>
+            <p>Seja <var>G</var> o conjunto de Gateways e <var>C</var> o número de Componentes Conexos.</p>
+            <div class="math-block">Se <var>C</var> > |<var>G</var>| ⇒ Existem nós isolados.</div>
+            <p>Isso indica falha física ou bloqueio de segurança (interface desconectada do grafo).</p>
+
+            <h4>2. Desbalanceamento</h4>
+            <p>Seja <var>d(v)</var> o grau do vértice (número de conexões).</p>
+            <div class="math-block">Se |<var>d(Gw<sub>A</sub>)</var> - <var>d(Gw<sub>B</sub>)</var>| > Limiar</div>
+            <p>Indica má distribuição de carga, permitindo rebalanceamento pró-ativo.</p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var nodes = new vis.DataSet([]); var edges = new vis.DataSet([]);
+        var container = document.getElementById('network');
+        var data = { nodes: nodes, edges: edges };
+        var options = { nodes: { shape: 'dot', size: 20, font: { color: 'white' }, borderWidth: 2 }, edges: { width: 2, color: { color: '#555', highlight: '#00ff00' }, arrows: 'to', smooth: { type: 'continuous' } }, groups: { gateway: { shape: 'image', image: 'https://img.icons8.com/color/96/router.png', size: 40 }, interface: { shape: 'dot' }, resumo: { shape: 'box', margin: 15 } }, physics: { enabled: true, barnesHut: { gravitationalConstant: -3000 } }, layout: { randomSeed: 2 } };
+        var network = new vis.Network(container, data, options);
+        const ctx = document.getElementById('loadChart').getContext('2d');
+        const loadChart = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#36A2EB', '#FF6384'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: 'white' } } } } });
+
+        function executarDiagnosticoFrontend(nodeList, edgeList) {
+            let gwLoad = {}, gwNames = {}, conn = new Set(), total = 0, gwCount = 0, susp = [];
+            nodeList.forEach(n => {
+                if (n.group === 'gateway') { gwLoad[n.id] = 0; gwNames[n.id] = n.label.replace("Gateway\n", "").trim(); gwCount++; }
+                if (n.group === 'interface') {
+                    total++;
+                    if (n.status === "SUSPECT") susp.push(n.label);
+                }
+            });
+            edgeList.forEach(e => { if (gwLoad.hasOwnProperty(e.to)) gwLoad[e.to]++; conn.add(e.from); });
+
+            let lbl = [], dt = []; for (let id in gwLoad) { lbl.push(gwNames[id]||id); dt.push(gwLoad[id]); }
+            loadChart.data.labels = lbl; loadChart.data.datasets[0].data = dt; loadChart.update('none');
+
+            // Atualiza Lista de Suspeitos
+            const sc = document.getElementById('suspicious-container');
+            const sl = document.getElementById('suspicious-list');
+            const btnR = document.getElementById('btnReset');
+
+            if (susp.length > 0) {
+                sc.style.display = "block"; sl.innerHTML = "";
+                // Agora o botão existe no HTML, então podemos manipulá-lo
+                if(btnR) btnR.style.display = "block"; 
+                
+                susp.forEach(name => {
+                    let d = document.createElement('div'); 
+                    d.className = 'suspicious-item'; 
+                    d.innerText = `⚠️ ${name}: Tráfego Anômalo`; 
+                    sl.appendChild(d);
+                });
+            } else {
+                sc.style.display = "none";
+                if(btnR) btnR.style.display = "none";
+            }
+
+            // Lógica Status
+            let iso = 0; nodeList.forEach(n => { if (n.group === 'interface' && !conn.has(n.id)) iso++; });
+            let vals = Object.values(gwLoad), max = Math.max(...vals)||0, min = Math.min(...vals)||0, diff = max-min;
+            let st = "OPERACIONAL", cls = "status-ok", msg = "Rede Saudável.", btn = false;
+
+            if (iso > 0) { st = "CRÍTICO"; cls = "status-critical"; msg = `ALERTA: ${iso} interfaces isoladas.`; btn = true; }
+            else if (gwCount > 1 && diff >= 2) { btn = true; if (diff === 2) { st = "ALERTA"; cls = "status-alert"; msg = "Leve desvio."; } else { st = "DESBALANCEADO"; cls = "status-critical"; msg = `Diff grave: ${diff}`; } }
+
+            const p = document.getElementById('topology-panel');
+            if (p) { p.className = ""; p.classList.add(cls); document.getElementById('topo-status').innerText = st; document.getElementById('topo-msg').innerText = msg; }
+            const b = document.getElementById('btnBalancear');
+            if (btn) { b.disabled = false; b.className = "action-btn btn-balance"; } else { b.disabled = true; b.className = "action-btn btn-balance btn-disabled"; }
+        }
+
+        async function balancearCargas() { try { await fetch('/balancear', {method:'POST'}); } catch(e){} }
+        
+        async function resetAlertas() { 
+            if(confirm("Confirmar reset dos alertas de segurança?")) {
+                try { 
+                    await fetch('/reset', {method:'POST'}); 
+                    // Esconde botão na hora para feedback visual
+                    document.getElementById('btnReset').style.display = 'none';
+                } catch(e){} 
+            }
+        }
+
+        async function updateGraph() {
+            try {
+                const res = await fetch('dados.json?t=' + new Date().getTime());
+                const json = await res.json();
+                let toDraw = [];
+                json.nodes.forEach(n => {
+                    if (n.label && n.label.includes("RESUMO_REDE")) return;
+                    if (n.label) n.label = n.label.replace(/RX:|TX:|InOctets|OutOctets|\[.*?\]|Info:/g, "").trim();
+                    
+                    if (n.status === "SUSPECT") { n.color = '#d580ff'; n.shape = 'diamond'; } 
+                    else if (n.group === 'interface' && n.color === '#ff5555') n.shape = 'diamond';
+                    toDraw.push(n);
+                });
+                nodes.update(toDraw); edges.clear(); edges.add(json.edges);
+                executarDiagnosticoFrontend(toDraw, json.edges);
+                document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
+            } catch(e) {}
+        }
+        setInterval(updateGraph, 500);
+    </script>
+</body>
+</html>
